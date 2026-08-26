@@ -19,9 +19,9 @@
   justify-content: space-between;
   padding: 20px; /* Um pouco mais de respiro interno */
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
-   width: 100%;
-  max-width: 100%; /* Mudado de 250px para 100% para preencher os 280px+ da grid */
-  min-height: 290px;
+width: 100%;
+min-height: 290px;
+box-sizing: border-box;
   font-family: 'Plus Jakarta Sans', sans-serif; /* Fonte moderna global para o card */
 }
 
@@ -135,20 +135,9 @@
 
 
 
-
-
-/*
-.cards-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-*/
-
 .cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px; /* Espaçamento uniforme entre os cards */
-    justify-content: flex-start; /* Alinha os cards à esquerda */
-    align-items: stretch; /* Mantém todos os cards com a mesma altura na linha */
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px 0;
-    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
 }
