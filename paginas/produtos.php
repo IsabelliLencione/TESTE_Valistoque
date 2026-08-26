@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <ul>
             <li><a href="relatorio.html">Relatório</a></li>
             <li><a href="produtos.html">Cadastro Produtos</a></li>
-            <li><a href="usuarios.html">Cadastro Usuários</a></li>
+            <li><a href="usuarios.php">Cadastro Usuários</a></li>
             <li><a href="prateleira.html">Prateleiras</a></li>
             <li><a href="estoque.html">Estoque Central</a></li>
             <li><a href="alertas.html">Alertas</a></li>
