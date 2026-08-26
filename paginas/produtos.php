@@ -1,20 +1,21 @@
 <?php
 require_once __DIR__ . '/../php/config.php';
 
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $sql = "INSERT INTO produto (nome, lote, data_validade, qtd_caixas, produtos_por_caixa, peso_kg) VALUES (?, ?, ?, ?, ?, ?)";
-    
+    $total_itens = $POST['caixa'] * $_POST['produto_caixa'];
+    $sql = "INSERT INTO estoque (nome_produto, lote, data_validade, total_itens, peso_un) VALUES (?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        $_POST['produto'], 
-        $_POST['lote'], 
-        $_POST['validade'], 
-        $_POST['caixa'], 
-        $_POST['produto-caixa'], 
+        $_POST['produto'],
+        $_POST['lote'],  
+        $_POST['validade'],
+        $total_itens,
         $_POST['peso']
     ]);
     exit;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
