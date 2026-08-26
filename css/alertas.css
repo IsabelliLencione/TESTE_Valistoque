@@ -1,0 +1,54 @@
+
+main { padding: 40px; }
+
+        /* Tela de Alertas */
+        .alertas-page { background-color: #e6e6e6; padding: 24px; border-radius: 10px; }
+        .alertas-grid { display: grid; grid-template-columns: minmax(320px, 380px) 1fr; gap: 24px; align-items: start; }
+        .alertas-card { background: #fff; border-radius: 10px; padding: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .alertas-card h2 { font-size: 20px; margin-bottom: 16px; color: #1a252f; }
+        .alertas-card p { color: #555; margin-bottom: 18px; }
+        .alertas-card button { margin-top: 6px; }
+        .alertas-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+        .resumo-box { background: linear-gradient(135deg, #3498db, #1f6fa5); color: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.18); }
+        .resumo-box.alerta-critico { background: linear-gradient(135deg, #e74c3c, #b3392b); }
+        .resumo-box.alerta-aviso { background: linear-gradient(135deg, #f39c12, #d35400); }
+        .resumo-box span { display: block; font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
+        .resumo-box strong { font-size: 26px; }
+        .historico-alertas { background: #fff; border-radius: 10px; padding: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .historico-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+        .historico-header h2 { margin: 0; font-size: 20px; color: #1a252f; }
+        .filtros-alerta { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filtro-btn { width: auto; padding: 10px 16px; border-radius: 999px; background: #ecf0f1; color: #2c3e50; border: 1px solid #d0d7de; font-size: 14px; }
+        .filtro-btn.ativo { background: #1a252f; color: #fff; border-color: #1a252f; }
+        .lista-alertas-completa { display: flex; flex-direction: column; gap: 14px; max-height: 620px; overflow-y: auto; padding-right: 4px; }
+        .alerta-item { border: 1px solid #e6ebf0; border-left: 6px solid #3498db; border-radius: 10px; padding: 16px; background: #fafcfd; }
+        .alerta-item h3 { font-size: 18px; color: #1a252f; margin-bottom: 8px; }
+        .alerta-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: #4f5b67; margin-bottom: 8px; }
+        .alerta-mensagem { color: #334155; line-height: 1.5; }
+        .tag-alerta { display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: bold; }
+        .tag-critico { background: #fdecea; color: #c0392b; }
+        .tag-aviso { background: #fff4e5; color: #d35400; }
+        .tag-info { background: #eaf4fb; color: #2471a3; }
+        .texto-auxiliar { font-size: 13px; color: #6b7280; margin-top: -10px; margin-bottom: 16px; }
+        .vazio-alertas { padding: 28px; text-align: center; color: #6b7280; background: #f8fafc; border-radius: 10px; border: 1px dashed #cbd5e1; }
+
+        @media (max-width: 1100px) {
+            .alertas-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding-left: 0; }
+            .nav { position: relative; width: 100%; height: auto; }
+            main { padding: 20px; }
+            .alertas-resumo { grid-template-columns: 1fr; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+
+
+        label { display: block; font-family: sans-serif; font-style: italic; color: #064b78; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 12px 15px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #fff; }
+        input:focus, select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
+        button { width: 100%; background-color: #3498db; color: #ffffff; border-radius: 8px; font-size: 18px; padding: 15px; border: 1px solid #2c3e50; cursor: pointer; transition: background 0.3s; }
+        button:hover { background-color: #2980b9; }
+        h1 { font-family: sans-serif; font-weight: bold; margin-bottom: 20px; color: #000; }
+        

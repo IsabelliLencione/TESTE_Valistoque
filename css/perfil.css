@@ -1,0 +1,170 @@
+main { padding: 40px; }
+        /*Perfil*/
+         /* --- AJUSTE DE CENTRALIZAÇÃO DO PERFIL --- */
+        #secao-perfil {
+            width: 100%;
+        }
+
+        #secao-perfil .container {
+            background-color: #e9ecef; /* O fundo cinza claro/branco do quadrado */
+            width: 100%;
+            max-width: 2000px;        /* Limita a largura máxima igual aos outros formulários */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            
+            /* Centraliza horizontalmente dentro do <main> */
+            margin: 0 auto;          
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Alinhamento dos botões para preencher o container de forma elegante */
+        #secao-perfil .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        /* Estilo da Foto de Perfil Compacta */
+        .avatar-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            border: 2px solid #ffffff;
+            flex-shrink: 0;
+        }
+
+        .avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            text-align: center;
+        }
+
+        .avatar-wrapper:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Campos Editáveis */
+        .info-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #333333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Inputs idênticos à sua tela original de cadastro */
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #212529;
+            outline: none;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .input-field:focus {
+            border-color: #3498db;
+        }
+
+        /* Campo de Acesso - Apenas Leitura (Admin não altera o próprio nível) */
+        .disabled-field {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+        }
+
+        .badge {
+            background-color: #0d6efd;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Botões de Ação */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-save:hover {
+            background-color: #217dbb;
+        }
+
+        .btn-exit {
+            width: 100%;
+            padding: 14px;
+            background-color: transparent;
+            color: #333333;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-exit:hover {
+            background-color: #dfe4ea;
+        }
+

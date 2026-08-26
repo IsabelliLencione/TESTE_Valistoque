@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+<style>
+/* Container do Card */
+.card-item {
+  background-color: #ffffff;
+  border: 1px solid #a5ecbe; /* Borda mais suave e sutil */
+  border-radius: 16px; /* Cantos mais arredondados e modernos */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); /* Sombra mais leve e elegante */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px; /* Um pouco mais de respiro interno */
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 250px;
+  min-height: 290px; 
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Fonte moderna global para o card */
+}
+
+/* Efeito Hover Fluido */
+.card-item:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px);
+}
+
+/* Detalhes do Produto */
+.card-detalhes {
+  margin-bottom: 12px;
+}
+
+.card-detalhes .nome {
+  margin-bottom: 14px; 
+}
+
+/* Título com o Gradiente Animado Ajustado */
+.card-detalhes .nome h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  border-radius: 12px; /* Reduzido para harmonizar com o container externo */
+  color: #ffffff;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  text-align: center; 
+  font-size: 1.1rem; /* Tamanho ajustado para melhor legibilidade */
+  font-weight: 700;
+  margin: 0; 
+  padding: 12px 16px; 
+  width: 100%; 
+  box-sizing: border-box;
+  min-height: 70px; 
+  background-color: #1d72b8; 
+  background-image: 
+    radial-gradient(at 10% 10%, #1d72b8 0px, transparent 55%), 
+    radial-gradient(at 90% 30%, #3a7bd5 0px, transparent 55%), 
+    radial-gradient(at 30% 80%, #00d2ff 0px, transparent 55%), 
+    radial-gradient(at 80% 80%, #43c6ac 0px, transparent 55%);
+  background-size: 180% 180%;
+  animation: moverManchas 8s ease infinite; /* Animação um pouco mais rápida e orgânica */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Sombra leve no texto para destacar do gradiente */
+}
+.card-detalhes .nome{
+    margin-bottom: 35px;
+}
+
+@keyframes moverManchas {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Informações do Produto */
+.card-info {
+  color: #64748b; /* Tom cinza-azulado moderno (Slate) */
+  font-size: 0.875rem;
+  margin: 8px 0;
+  line-height: 1.4;
+  padding-left: 8px;
+}
+
+.card-info strong {
+  color: #1e293b; /* Texto em destaque quase preto, sem usar o puro #000 */
+   font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+}
+
+/* Seção de Ações (Botões) */
+.card-acoes {
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+/* Botões Estilo Minimalista/Moderno */
+.card-acoes a {
+  border-radius: 8px; /* Cantos combinando com o card */
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 12px;
+  text-align: center;
+  text-decoration: none;
+  flex: 1;
+  transition: all 0.2s ease;
+}
+
+/* Botão Editar (Azul Confortável) */
+.btn-editar {
+  background-color: #eff6ff; /* Fundo claro para contraste elegante */
+  color: #2563eb; /* Texto azul */
+}
+
+.btn-editar:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Botão Excluir (Substituído o Verde Fluorescente por um Vermelho/Rosa Moderno) */
+.btn-excluir {
+  background-color: #f0fdf4; /* Fundo verde bem suave e limpo */
+  color: #16a34a; /* Texto em verde esmeralda elegante */
+}
+
+.btn-excluir:hover {
+  background-color: #16a34a; /* Fica verde sólido ao passar o mouse */
+  color: #ffffff; /* Texto muda para branco no hover */
+}
+
+</style>
+</head>
+<body>
+    <div class="card-item"> 
+  <div class="card-detalhes"> 
+    <div class="nome"> 
+      <h3>ARROZ</h3> 
+    </div> 
+    <p class="card-info"><strong>Lote:</strong>123</p> 
+    <p class="card-info"><strong>Validade:</strong>defe</p> 
+    <p class="card-info"><strong>Caixas:</strong>12</p> 
+    <p class="card-info"><strong>Total no Lote:</strong>433</p> 
+  </div> 
+  <div class="card-acoes"> 
+    <a  class="btn-editar">Editar</a> 
+    <a class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir o produto:');"> Excluir </a> 
+  </div> 
+</div>
+
+</body>
+</html>

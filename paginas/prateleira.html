@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prateleira</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/prateleira.css">
+</head>
+<body>
+
+<nav class="nav"> 
+    <div class="header-nav">Valistoque</div> 
+
+    <ul> 
+        <li><a href="relatorio.html">Relatório</a></li> 
+        <li><a href="produtos.php">Cadastro Produtos</a></li> 
+        <li><a href="usuarios.html">Cadastro Usuários</a></li> 
+        <li><a href="prateleira.html">Prateleiras</a></li> 
+        <li><a href="estoque.php">Estoque Central</a></li> 
+        <li><a href="alertas.html">Alertas</a></li> 
+
+        <li style="margin-top: auto; border-top: 1px solid #34495e;">
+            <a href="perfil.html">Perfil</a>
+        </li> 
+    </ul> 
+</nav>
+
+<main>
+    
+        <!-- SEÇÃO DE PRATELEIRAS -->
+        <div id="secao-prateleira">
+            <div class="secao-header">
+                <h1>Prateleiras</h1>
+                <button class="btn-adicionar btn-mais"  onclick="document.getElementById('cadastrarPrateleira').showModal()" title="Adicionar Prateleira">&#x2b;</button>
+            </div>
+            <form action="/buscar" method="get" class="form-busca-prateleira" onsubmit="return false;"> 
+                <div> 
+                    <label for="prateleira">Prateleira</label> 
+                    <input type="text" id="prateleiraBusca" placeholder="Buscar prateleira, produto ou lote..."> 
+                </div> 
+            </form>
+
+            <div class="prateleiras-container"></div>
+
+            <!-- Modal Dialog interno da Prateleira -->
+            <dialog id="cadastrarPrateleira">
+                <div class="btnEtitulo">
+                    <h3>Adicione Prateleira</h3>
+                    <button onclick="cadastrarPrateleira.close()" class="btn-fechar" aria-label="Fechar">&times;</button>
+                </div>
+                <div class="modal-footer">
+                    <form id="form-prateleira" onsubmit="return false;">
+                        <div>
+                            <label for="num-prateleira">Selecione a Prateleira</label>
+                            <select id="num-prateleira" required></select>
+                        </div>
+                        <div>
+                            <label for="lote-prat">Lote do Produto</label>
+                            <select id="lote-prat" required></select>
+                        </div>
+                        <div>
+                            <label for="caixas-prat">Quantidade de Caixas a Alocar</label>
+                            <input type="number" id="caixas-prat" placeholder="Ex: 5" min="1" required>
+                        </div>
+                        <button id="closeModalBtn" class="btn-close">Cadastrar</button>
+                    </form>
+                </div>
+            </dialog>
+        </div>
+
+</main>
+<script type="module" src="../js/prateleira.js"></script>
+</body>
+</html>

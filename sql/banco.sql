@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS valistoque_testes CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE valistoque_testes;
+
+CREATE TABLE IF NOT EXISTS produto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    lote INT NOT NULL,
+    data_validade DATE NOT NULL,
+    qtd_caixas INT NOT NULL,
+    produtos_por_caixa INT NOT NULL,
+    peso_kg DECIMAL(10,2) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/relatorio.css">
+</head>
+<body>
+<nav class="nav"> 
+    <div class="header-nav">Valistoque</div> 
+
+    <ul> 
+        <li><a href="relatorio.html">Relatório</a></li> 
+        <li><a href="produtos.php">Cadastro Produtos</a></li> 
+        <li><a href="usuarios.html">Cadastro Usuários</a></li> 
+        <li><a href="prateleira.html">Prateleiras</a></li> 
+        <li><a href="estoque.php">Estoque Central</a></li> 
+        <li><a href="alertas.html">Alertas</a></li> 
+
+        <li style="margin-top: auto; border-top: 1px solid #34495e;">
+            <a href="perfil.html">Perfil</a>
+        </li> 
+    </ul> 
+</nav>
+<main>
+           <div id="secao-relatorio">
+            <div class="relatorio-container">
+                <div class="content-header">
+                    <div class="month-selector">
+                        <span class="seta-mes" onclick="mudarMes(-1)">❮</span>
+                        <span id="txt-mes">Março</span>
+                        <span class="seta-mes" onclick="mudarMes(1)">❯</span>
+                    </div>
+                    <h1 id="txt-ano">2026</h1>
+                </div>
+                <div class="cards-grid">
+                    <div class="card"><h3>Saída - Estoque central</h3><div class="card-list-scroll" id="saida-estoque"></div></div>
+                    <div class="card"><h3>Entrada - Estoque central</h3><div class="card-list-scroll" id="entrada-estoque"></div></div>
+                    <div class="card"><h3>Saída - Prateleira</h3><div class="card-list-scroll" id="saida-prateleira"></div></div>
+                    <div class="card"><h3>Entrada - Prateleira</h3><div class="card-list-scroll" id="entrada-prateleira"></div></div>
+                    
+                </div>
+                <div class="alert-card">
+                    <h3>Alertas emitidos:</h3>
+                    <div class="alert-content">
+                        <div class="alert-list-scroll" id="lista-alertas"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</main>
+   <script type="module" src="../js/relatorio.js"></script>
+</body>
+</html>
