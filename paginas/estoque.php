@@ -2,10 +2,10 @@
 require_once __DIR__ . "/../php/config.php";
 
 try {
-    $stmt = $pdo->query("SELECT * FROM produto ORDER BY id DESC");
-    $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query("SELECT * FROM estoque ORDER BY id_estoque DESC");
+    $estoque = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Erro ao buscar produtos: " . $e->getMessage());
+    die("Erro ao buscar estoque: " . $e->getMessage());
 }
 
 ?>
@@ -47,24 +47,22 @@ try {
         </div> 
         
         <div class="cards-container">
-            <?php if (empty($produtos)): ?>
+            <?php if (empty($estoque)): ?>
                 <p class="sem-produtos">Nenhum produto cadastrado no estoque.</p>
             <?php else: ?>
-                <?php foreach ($produtos as $prod): ?>
+                <?php foreach ($estoque as $est): ?>
                     <?php 
-                        $dataFormatada = date("d/m/Y", strtotime($prod['data_validade']));
-                        $totalItens = $prod['qtd_caixas'] * $prod['produtos_por_caixa'];
+                        $dataFormatada = date("d/m/Y", strtotime($est['data_validade']));
                     ?>
             
                     <div class="card-item">
                         <div class="card-detalhes">
                             <div class="nome">
-                                <h3><?= htmlspecialchars($prod['nome']) ?></h3>
+                                <h3><?= htmlspecialchars($est['nome_produto']) ?></h3>
                             </div>
-                            <p class="card-info"><strong>Lote:</strong> <?= htmlspecialchars($prod['lote']) ?></p>
+                            <p class="card-info"><strong>Lote:</strong> <?= htmlspecialchars($est['lote']) ?></p>
                             <p class="card-info"><strong>Validade:</strong> <?= htmlspecialchars($dataFormatada) ?></p>
-                            <p class="card-info"><strong>Caixas:</strong> <?= htmlspecialchars($prod['qtd_caixas']) ?> cx</p>
-                            <p class="card-info"><strong>Total no Lote:</strong> <?= htmlspecialchars($totalItens) ?> unidades</p>
+                            <p class="card-info"><strong>Total no Lote:</strong> <?= htmlspecialchars($est['total_itens']) ?> unidades</p>
                         </div>
 
                         <div class="card-acoes">
