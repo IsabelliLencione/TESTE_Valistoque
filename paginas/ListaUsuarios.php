@@ -24,7 +24,7 @@ require_once __DIR__ . "/../php/config.php";
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
         <li><a href="alertas.html">Alertas</a></li> 
-        <li><a href="ListaUsuarios.html">Usuários</a></li>
+        <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
             <a href="perfil.html">Perfil</a>
@@ -53,12 +53,12 @@ require_once __DIR__ . "/../php/config.php";
                     <?php else: ?>
                         <?php foreach ($usuarios as $usuario): ?>
                             <tr>
-                                <td><?= htmlspecialchars($usuario['nome']) ?></td>
-                                <td><?= htmlspecialchars($usuario['email']) ?></td>
-                                <td><?= htmlspecialchars($usuario['tipo']) ?></td>
+                                <td><?= htmlspecialchars($usuario['nome-usuario']) ?></td>
+                                <td><?= htmlspecialchars($usuario['email-usuario']) ?></td>
+                                <td><?= htmlspecialchars($usuario['tipo-usuario']) ?></td>
                                 <td>
                                     <a href="usuarios.php?editar_id=<?= $usuario['id'] ?>" class="btn-editar">Editar</a>
-                                    <a href="../php/excluir_usuario.php?id=<?= $usuario['id'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir o usuário: <?= htmlspecialchars($usuario['nome'], ENT_QUOTES) ?>?');">Excluir</a>
+                                    <a href="../php/excluir_usuario.php?id=<?= $usuario['id'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir o usuário: <?= htmlspecialchars($usuario['nome-usuario'], ENT_QUOTES) ?>?');">Excluir</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
