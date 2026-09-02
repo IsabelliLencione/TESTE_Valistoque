@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . "/../php/config.php";
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuarios</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/produtos.css">
     <link rel="stylesheet" href="../css/usuarios.css">
 </head>
 <body>
@@ -19,6 +23,7 @@
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
         <li><a href="alertas.html">Alertas</a></li> 
+        <li><a href="ListaUsuarios.html">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
             <a href="perfil.html">Perfil</a>
@@ -49,7 +54,7 @@
                 <label for="confirmsenha">Confirmar senha:</label>
                 <input type="password" id="confirmsenha" name="confirmsenha" required> 
             
-                <fieldset>
+                    <fieldset>
                     <legend>Selecione o tipo:</legend>
                     <div class="tipoAdm">
                         <input type="radio" id="tipo-admin" name="tipo-usuario" value="administrador" checked />
@@ -64,38 +69,9 @@
                     <button type="submit">Cadastrar</button>
             </form>
             </div>
-            <br>
-            <br>
-            <button id="botao-UsuariosCadastrados" onclick="document.getElementById('modalUsuarios').showModal()">👤 Ver Equipe</button>
-            <!--Modal para ver os usuários-->
-                <dialog id="modalUsuarios" class="modalUsuarios">
-                    <div class="modal-conteudo">
-    
-                        <div class="modalUsuarios-header">
-                            <h2>Gerenciamento de Usuários</h2>
-                            <button onclick="modalUsuarios.close()" class="btn-fecharModalUsuarios" aria-label="Fechar">&times;</button>
-                        </div>
-    
-                    <div class="modalUsuarios-body">
-                        <div class="container-tabelasUsuarios"> 
-                            <div>
-                                <form action="/buscarUsuario" method="get" class="form-busca-usuario" onsubmit="return false;"> 
-                                    <div> 
-                                        <label for="usuario">Usuários</label> 
-                                        <input type="text" id="usuarioBusca" placeholder="Buscar nome..."> 
-                                    </div> 
-            </form>
-                            </div>
-                            <div>
-                                <table id="tabela-usuario"> 
-                                    <thead> 
-                                        <tr><th>Nome</th><th>Email</th><th>Nível de Acesso</th></tr>
-                                    </thead> 
-                                <tbody></tbody> 
-                                </table> 
-                            </div>
-                </dialog>
-
+            
+           
+           
     </div>
         
         

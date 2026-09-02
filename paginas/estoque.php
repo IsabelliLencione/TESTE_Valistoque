@@ -7,6 +7,7 @@ try {
 } catch (PDOException $e) {
     die("Erro ao buscar produtos: " . $e->getMessage());
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -30,6 +31,7 @@ try {
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
         <li><a href="alertas.html">Alertas</a></li> 
+        <li><a href="ListaUsuarios.html">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
             <a href="perfil.html">Perfil</a>

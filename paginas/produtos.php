@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <li><a href="prateleira.html">Prateleiras</a></li>
             <li><a href="estoque.html">Estoque Central</a></li>
             <li><a href="alertas.html">Alertas</a></li>
+            <li><a href="ListaUsuarios.html">Usuários</a></li>
             <li style="margin-top: auto; border-top: 1px solid #34495e;">
                 <a href="perfil.html">Perfil</a>
             </li>

@@ -5,7 +5,7 @@
         
         /* Formulários Comuns */
         .secao-form { background-color: #e6e6e6; padding: 20px; border-radius: 8px; }
-        h1 { font-family: sans-serif; font-weight: bold; margin-bottom: 20px; color: #000; }
+        h1 { font-family: sans-serif; font-weight: bold; margin-bottom: 20px; color: #3b201e; }
         
         label { display: block; font-family: sans-serif; font-style: italic; color: #064b78; margin-bottom: 5px; font-size: 14px; }
         input, select { width: 100%; padding: 12px 15px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #fff; }

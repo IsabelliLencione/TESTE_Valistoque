@@ -1,0 +1,95 @@
+/* ==========================================
+   Estilização da Tela Lista de Usuários
+   Valistoque System
+   ========================================== */
+
+/* Layout Expandido da Seção (Ocupa quase a página toda) */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Container Principal Cinza Amplo (Padrão de página cheia) */
+.Usuarios-header {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 32px 40px;
+    width: 100%;
+    max-width: 1400px; /* Largura expandida para ocupar quase toda a página */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    box-sizing: border-box;
+}
+
+.Usuarios-header h2 {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #3b201e;
+    margin: 0 0 24px 0;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+/* Container interno da tabela */
+.container-tabelasUsuarios {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(14, 9, 167, 0.05);
+    border: 1px solid #e2e8f0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Tabela de Usuários Expandida */
+#tabela-usuario {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+#tabela-usuario thead {
+    background-color: #2980b9;
+    color: #ffffff;
+}
+
+#tabela-usuario th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#tabela-usuario tbody tr {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#tabela-usuario tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+#tabela-usuario tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+#tabela-usuario td {
+    padding: 16px 20px;
+    font-size: 0.95rem;
+    color: #554233;
+    border-bottom: 1px solid #e2e8f0;
+}
