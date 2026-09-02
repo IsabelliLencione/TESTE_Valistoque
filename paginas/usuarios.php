@@ -1,10 +1,26 @@
 <?php
-require_once __DIR__ . "/../php/config.php";
+require_once __DIR__ . '/../php/config.php';
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+if ($_POST['senha'] !== $_POST['confirmsenha']) { 
+    die("As senhas não são iguais!"); 
+}
+
+    $sql = "INSERT INTO usuarios (nome, email, cpf, senha, tipo) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        $_POST['nome-usuario'],
+        $_POST['email-usuario'],  
+        $_POST['cpf-usuario'],
+        $_POST['senha'],
+        $_POST['tipo-usuario']
+    ]);
+    exit;
+}
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +54,7 @@ require_once __DIR__ . "/../php/config.php";
         <h1>Cadastro de Usuário</h1>
     
         <div>
-            <form action="" method="POST" class="funcionario" onsubmit="salvarUsuario(event)">
+            <form action="" method="POST" class="funcionario" >
                 <label for="nome-usuario">Nome do Usuário:</label>
                 <input type="text" id="nome-usuario" name="nome-usuario" required> 
             
