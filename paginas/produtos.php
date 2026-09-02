@@ -3,7 +3,7 @@ require_once __DIR__ . '/../php/config.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $total_itens = $POST['caixa'] * $_POST['produto_caixa'];
+    $total_itens = ($_POST['caixa'] * $_POST['produto-caixa']);
     $sql = "INSERT INTO estoque (nome_produto, lote, data_validade, total_itens, peso_un) VALUES (?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
