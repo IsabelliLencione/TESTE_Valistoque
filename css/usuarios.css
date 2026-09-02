@@ -4,7 +4,7 @@
        
         
         /* Formulários Comuns */
-        .secao-form { background-color: #e6e6e6; padding: 20px; border-radius: 8px; }
+        #secao-form{ background-color: #e6e6e6; padding: 20px; border-radius: 8px; }
         h1 { font-family: sans-serif; font-weight: bold; margin-bottom: 20px; color: #3b201e; }
         
         label { display: block; font-family: sans-serif; font-style: italic; color: #064b78; margin-bottom: 5px; font-size: 14px; }
@@ -14,107 +14,8 @@
         button { width: 100%; background-color: #3498db; color: #ffffff; border-radius: 8px; font-size: 18px; padding: 15px; border: 1px solid #2c3e50; cursor: pointer; transition: background 0.3s; }
         button:hover { background-color: #2980b9; }
         
+ 
 /*----------------------------------------------------------------------------------------------*/
-
-/* Tabelas de Usuarios cadastrados que estao no Modal */
-.modalUsuarios { 
-  width: 90%; 
-  max-width: 1000px; 
-  max-height: 85vh; 
-  height: auto; 
-  border: none;      
-  padding: 0;       
-  border-radius: 6px; 
-} 
-
-.modalUsuarios {
-    width: 80%;
-    max-width: 900px;
-    padding: 0;
-    border: 0;
-    border-radius: 10px;
-}
-
-.modalUsuarios::backdrop {
-    background: rgba(0, 0, 0, .5);
-}
-
-.modalUsuarios-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background: #f5f5f5;
-    border-bottom: 1px solid #ddd;
-}
-
-.modalUsuarios-header h2{
-    margin: 0;
-    font-size: 2rem;
-    color: #0d6dad;
-}
-.container-tabelasUsuarios h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.modalUsuarios-body {
-    padding: 15px;
-}
-
-.container-tabelasUsuarios {
-    display: flex;
-    gap: 40px;
-}
-
-.container-tabelasUsuarios > div {
-    flex: 1;
-}
-
-.modalUsuarios table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.modalUsuarios th,
-.modalUsuarios td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.btn-fecharModalUsuarios {
-    width: 25px;
-    height: 25px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: #eee;
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
-    cursor: pointer;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.btn-fecharModalUsuarios:hover{
-    background-color: #6d6e6f;
-    color: white;
-}
-#botao-UsuariosCadastrados{
-    max-width: 20rem;
-    width: 100%;
-}
-
-.container-tabelasUsuarios{
-    display: flex;
-    flex-direction: column;
-}
-
 
 
 
@@ -154,6 +55,3 @@
         tr:hover { background-color: #f1f1f1; }
 
 
-    
- dialog { border: none; border-radius: 8px; padding: 25px; width: 400px; max-width: 90vw; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
- dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
