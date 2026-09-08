@@ -1,3 +1,21 @@
+<?php
+require_once __DIR__ . "/../php/config.php";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+if ($_POST['senha'] !== $_POST['confirmsenha']) { 
+    die("Senha incorreta"); 
+}
+if ($_POST['email'] !== $_POST['confirmemail']) { 
+    die("Email incorreto"); 
+}
+if ($_POST['senha'] !== $_POST['confirmsenha']) { 
+    die("As senhas não são iguais!"); 
+}
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

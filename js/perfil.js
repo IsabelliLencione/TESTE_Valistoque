@@ -4,31 +4,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function configurarEventos() {
-    // Clique na foto para abrir o seletor de arquivo
-    const avatarWrapper = document.querySelector('.avatar-wrapper');
-    if (avatarWrapper) {
-        avatarWrapper.addEventListener('click', triggerSelectFile);
+    const avatarWrapper = document.getElementById('avatar-wrapper');
+    const fileInput = document.getElementById('file-input');
+
+    if (avatarWrapper && fileInput) {
+        avatarWrapper.addEventListener('click', () => {
+            fileInput.click();
+        });
     }
 
-    // Evento de alteração do arquivo de imagem
-    const fileInput = document.getElementById('file-input');
     if (fileInput) {
         fileInput.addEventListener('change', previewImage);
     }
 
-    // Submissão do formulário de perfil
     const profileForm = document.getElementById('profile-form');
     if (profileForm) {
         profileForm.addEventListener('submit', saveProfile);
     }
 }
 
-export function triggerSelectFile() {
+function triggerSelectFile() {
     const fileInput = document.getElementById('file-input');
     if (fileInput) fileInput.click();
 }
 
-export function previewImage(event) {
+function previewImage(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -37,14 +37,14 @@ export function previewImage(event) {
             if (profileImg) {
                 profileImg.src = e.target.result;
             }
-            // Salva a imagem convertida em Base64 para persistência
+            // Salva a imagem em Base64 no LocalStorage para persistir ao recarregar
             localStorage.setItem('fotoPerfilUsuario', e.target.result);
         };
         reader.readAsDataURL(file);
     }
 }
 
-export function saveProfile(event) {
+function saveProfile(event) {
     event.preventDefault();
 
     const nome = document.getElementById('user-name').value;
@@ -52,8 +52,8 @@ export function saveProfile(event) {
     const badgePerfil = document.getElementById('badge-perfil');
     
     const perfilAtual = {
-        nome,
-        email,
+        nome: nome,
+        email: email,
         perfil: badgePerfil ? badgePerfil.innerText.toLowerCase() : 'administrador'
     };
 
@@ -61,8 +61,8 @@ export function saveProfile(event) {
     alert("Perfil atualizado com sucesso!");
 }
 
-export function carregarPerfil() {
-    // 1. Busca os dados de texto do perfil ou utiliza o painel salvo
+function carregarPerfil() {
+    // 1. Busca os dados do perfil salvos
     const perfilSalvo = JSON.parse(localStorage.getItem('perfilUsuario')) || 
                         JSON.parse(localStorage.getItem('valistoqueUsuario')) || {
                             nome: 'Administrador Valistoque',
@@ -70,17 +70,17 @@ export function carregarPerfil() {
                             perfil: 'administrador'
                         };
 
-    // 2. Busca a foto salva em Base64
+    // 2. Busca a foto salva
     const fotoSalva = localStorage.getItem('fotoPerfilUsuario');
 
-    // 3. Captura os elementos DOM
+    // 3. Elementos do DOM
     const inputNome = document.getElementById('user-name');
     const inputEmail = document.getElementById('user-email');
     const badgePerfil = document.getElementById('badge-perfil');
     const tituloPerfil = document.getElementById('titulo-perfil-admin');
     const imgPerfil = document.getElementById('profile-img');
 
-    // 4. Preenche os valores nos campos
+    // 4. Preenche os dados nos campos
     if (inputNome) inputNome.value = perfilSalvo.nome || '';
     if (inputEmail) inputEmail.value = perfilSalvo.email || '';
     

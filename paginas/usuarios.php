@@ -62,7 +62,7 @@ if ($_POST['senha'] !== $_POST['confirmsenha']) {
                 <input type="email" id="email-usuario" name="email-usuario" required> 
             
                 <label for="cpf-usuario">CPF do usuário:</label>
-                <input type="text" id="cpf-usuario" name="cpf-usuario" oninput="aplicarMascaraCPF(this)" required> 
+                <input type="number" id="cpf-usuario" name="cpf-usuario" oninput="aplicarMascaraCPF(this)" required> 
             
                 <label for="senha">Senha para cadastro:</label>
                 <input type="password" id="senha" name="senha" required> 
