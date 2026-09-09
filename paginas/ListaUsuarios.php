@@ -1,7 +1,13 @@
-<?php 
-require_once __DIR__ . "/../php/config.php";
+<?php
+require_once __DIR__ . '/../php/config.php';
 
-
+try {
+    // 1. Prepara e executa a busca de todos os usuários
+    $stmt = $pdo->query("SELECT id, nome, email, cpf, tipo FROM usuarios ORDER BY id DESC");
+    $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erro ao buscar usuários: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -20,14 +26,14 @@ require_once __DIR__ . "/../php/config.php";
     <ul> 
         <li><a href="relatorio.html">Relatório</a></li> 
         <li><a href="produtos.php">Cadastro Produtos</a></li> 
-        <li><a href="usuarios.html">Cadastro Usuários</a></li> 
+        <li><a href="usuarios.php">Cadastro Usuários</a></li> 
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
         <li><a href="alertas.html">Alertas</a></li> 
         <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
-            <a href="perfil.html">Perfil</a>
+            <a href="perfil.php">Perfil</a>
         </li> 
     </ul>
     </nav>
@@ -45,25 +51,29 @@ require_once __DIR__ . "/../php/config.php";
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php if (empty($usuarios)): ?>
-                        <tr>
-                            <td colspan="4" style="text-align: center;">Nenhum usuário cadastrado.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($usuarios as $usuario): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($usuario['nome-usuario']) ?></td>
-                                <td><?= htmlspecialchars($usuario['email-usuario']) ?></td>
-                                <td><?= htmlspecialchars($usuario['tipo-usuario']) ?></td>
-                                <td>
-                                    <a href="usuarios.php?editar_id=<?= $usuario['id'] ?>" class="btn-editar">Editar</a>
-                                    <a href="../php/excluir_usuario.php?id=<?= $usuario['id'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir o usuário: <?= htmlspecialchars($usuario['nome-usuario'], ENT_QUOTES) ?>?');">Excluir</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
+              <tbody>
+    <?php if (empty($usuarios)): ?>
+        <tr>
+            <td colspan="4" style="text-align: center;">Nenhum usuário cadastrado.</td>
+        </tr>
+    <?php else: ?>
+        <?php foreach ($usuarios as $usuario): ?>
+            <tr>
+                <td><?= htmlspecialchars($usuario['nome']) ?></td>
+                <td><?= htmlspecialchars($usuario['email']) ?></td>
+                <td><?= htmlspecialchars($usuario['tipo']) ?></td>
+                <td>
+                    <a href="usuarios.php?editar_id=<?= $usuario['id'] ?>" class="btn-editar">Editar</a>
+                    <a href="../php/excluir_usuario.php?id=<?= $usuario['id'] ?>" 
+                       class="btn-excluir" 
+                       onclick="return confirm('Tem certeza que deseja excluir o usuário: <?= htmlspecialchars($usuario['nome'], ENT_QUOTES) ?>?');">
+                       Excluir
+                    </a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</tbody>
             </table>
         </div>
     </div>

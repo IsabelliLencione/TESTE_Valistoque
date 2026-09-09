@@ -117,7 +117,7 @@
 
         .card-buttons a { text-decoration: none; }
 
-        .btn-primary, .btn-primary2 {
+        .btn-primary {
             padding: 1rem 2.5rem;
             border-radius: var(--radius);
             font-weight: 600;
@@ -127,10 +127,10 @@
         }
 
         .btn-primary { background-color: hsl(var(--primary)); color: white; border: none; }
-        .btn-primary2 { background-color: transparent; color: hsl(var(--primary)); border: 2px solid hsl(var(--primary)); }
+        
         
         .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
-        .btn-primary2:hover { background: rgba(22, 163, 74, 0.05); transform: translateY(-3px); }
+        
 
         /* FAIXA ANIMADA lembrar */
         .container-faixa {

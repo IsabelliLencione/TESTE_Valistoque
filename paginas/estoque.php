@@ -8,6 +8,7 @@ try {
     die("Erro ao buscar estoque: " . $e->getMessage());
 }
 
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -34,7 +35,7 @@ try {
         <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
-            <a href="perfil.html">Perfil</a>
+            <a href="perfil.php">Perfil</a>
         </li> 
     </ul> 
 </nav>
@@ -65,14 +66,18 @@ try {
                             <p class="card-info"><strong>Total no Lote:</strong> <?= htmlspecialchars($est['total_itens']) ?> unidades</p>
                         </div>
 
-                        <div class="card-acoes">
-                            <a href="produtos.php?editar_id=<?= $prod['id'] ?>" class="btn-editar">Editar</a>
-                            <a href="../php/excluir_produto.php?id=<?= $prod['id'] ?>" 
-                               class="btn-excluir" 
-                               onclick="return confirm('Tem certeza que deseja excluir o produto: <?= htmlspecialchars($prod['nome'], ENT_QUOTES) ?>?');">
-                                Excluir
-                            </a>
-                        </div>
+                       <div class="card-acoes">
+    <!-- Usa a variável $est['id_estoque'] para gerar o link correto -->
+                        <a href="produtos.php?editar_id=<?= $est['id_estoque'] ?>" class="btn-editar">
+                            Editar
+                        </a>
+
+                        <a href="../php/excluir_produto.php?id=<?= $est['id_estoque'] ?>" 
+                        class="btn-excluir" 
+                        onclick="return confirm('Tem certeza que deseja excluir o produto: <?= htmlspecialchars($est['nome_produto'], ENT_QUOTES) ?>?');">
+                            Excluir
+                        </a>
+                    </div>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
