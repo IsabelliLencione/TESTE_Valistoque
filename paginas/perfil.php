@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    ```
+    <title>Perfil - Valistoque</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/perfil.css">
+    ```
+
+</head>
+
+<body>
+
+    ```
+    <!-- Menu lateral -->
+    <nav class="nav">
+
+        <div class="header-nav">
+            Valistoque
+        </div>
+
+        <ul>
+
+            <li>
+                <a href="relatorio.html">Relatório</a>
+            </li>
+
+            <li>
+                <a href="produtos.php">Cadastro Produtos</a>
+            </li>
+
+            <li>
+                <a href="usuarios.php">Cadastro Usuários</a>
+            </li>
+
+            <li>
+                <a href="prateleira.html">Prateleiras</a>
+            </li>
+
+            <li>
+                <a href="estoque.php">Estoque Central</a>
+            </li>
+
+            <li>
+                <a href="alertas.html">Alertas</a>
+            </li>
+
+            <li>
+                <a href="ListaUsuarios.html">Usuários</a>
+            </li>
+
+            <li style="margin-top: auto; border-top: 1px solid #34495e;">
+                <a href="perfil.html">Perfil</a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- Conteúdo do perfil -->
+    <main>
+
+        <div id="secao-perfil">
+
+            <div class="container">
+
+                <!-- Foto e título do perfil -->
+                <div class="profile-header">
+
+                    <div class="avatar-wrapper" onclick="triggerSelectFile()">
+
+                        <img id="profile-img" src="https://via.placeholder.com/150" alt="Foto de perfil">
+
+                        <div class="avatar-overlay">
+                            <span>ADICIONAR</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Escolher foto -->
+                    <input type="file" id="file-input" accept="image/*" onchange="previewImage(event)"
+                        style="display: none;">
+
+                    <h2 id="titulo-perfil-admin">
+                        Perfil do Administrador
+                    </h2>
+
+                </div>
+
+
+                <!-- Informações do usuário -->
+                <form id="profile-form" onsubmit="saveProfile(event)">
+
+                    <!-- Nome -->
+                    <div class="info-group">
+
+                        <label class="label" for="user-name">
+                            Nome do usuário:
+                        </label>
+
+                        <input type="text" id="user-name" class="input-field" value="Administrador Valistoque" readonly
+                            required>
+
+                    </div>
+
+
+                    <!-- E-mail -->
+                    <div class="info-group">
+
+                        <label class="label" for="user-email">
+                            Email do usuário:
+                        </label>
+
+                        <input type="email" id="user-email" class="input-field" value="admin@valistoque.com" readonly
+                            required>
+
+                    </div>
+
+
+                    <!-- Tipo de conta -->
+                    <div class="info-group">
+
+                        <span class="label">
+                            Tipo de conta:
+                        </span>
+
+                        <div class="input-field disabled-field">
+
+                            <span class="badge" id="badge-perfil">
+                                Administrador
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Botão para sair -->
+                    <div class="button-group">
+
+                        <a href="Principal.html" class="btn-exit">
+                            Sair para a tela principal
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- JavaScript do perfil -->
+    <script type="module" src="../js/perfil.js"></script>
+    ```
+
+</body>
+
+</html>
