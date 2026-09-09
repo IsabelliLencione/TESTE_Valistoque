@@ -31,12 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="header-nav">Valistoque</div>
         <ul>
             <li><a href="relatorio.html">Relatório</a></li>
-            <li><a href="produtos.html">Cadastro Produtos</a></li>
+            <li><a href="produtos.php">Cadastro Produtos</a></li>
             <li><a href="usuarios.php">Cadastro Usuários</a></li>
             <li><a href="prateleira.html">Prateleiras</a></li>
-            <li><a href="estoque.html">Estoque Central</a></li>
-            <li><a href="alertas.html">Alertas</a></li>
-            <li><a href="ListaUsuarios.html">Usuários</a></li>
+            <li><a href="estoque.php">Estoque Central</a></li>
+            <li><a href="alertas.php">Alertas</a></li>
+            <li><a href="ListaUsuarios.php">Usuários</a></li>
             <li style="margin-top: auto; border-top: 1px solid #34495e;">
                 <a href="perfil.html">Perfil</a>
             </li>

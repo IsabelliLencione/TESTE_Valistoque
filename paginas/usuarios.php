@@ -38,8 +38,8 @@ if ($_POST['senha'] !== $_POST['confirmsenha']) {
         <li><a href="usuarios.php">Cadastro Usuários</a></li> 
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
-        <li><a href="alertas.html">Alertas</a></li> 
-        <li><a href="ListaUsuarios.html">Usuários</a></li>
+        <li><a href="alertas.php">Alertas</a></li> 
+        <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
             <a href="perfil.html">Perfil</a>
@@ -62,7 +62,8 @@ if ($_POST['senha'] !== $_POST['confirmsenha']) {
                 <input type="email" id="email-usuario" name="email-usuario" required> 
             
                 <label for="cpf-usuario">CPF do usuário:</label>
-                <input type="text" id="cpf-usuario" name="cpf-usuario" oninput="aplicarMascaraCPF(this)" required> 
+                <input type="number" id="cpf-usuario" name="cpf-usuario" maxlength="11" required>
+
             
                 <label for="senha">Senha para cadastro:</label>
                 <input type="password" id="senha" name="senha" required> 
@@ -91,7 +92,7 @@ if ($_POST['senha'] !== $_POST['confirmsenha']) {
     </div>
         
         
-<script type="module" src="../js/usuarios.js"></script>
+<script  src="../js/usuarios.js"></script>
 </main>
 </body>
 </html>
