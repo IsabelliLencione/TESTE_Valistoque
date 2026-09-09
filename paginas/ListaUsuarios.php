@@ -1,5 +1,6 @@
-<?php
-require_once __DIR__ . '/../php/config.php';
+<?php 
+require_once __DIR__ . "/../php/config.php";
+
 
 try {
     // 1. Prepara e executa a busca de todos os usuários
@@ -29,7 +30,7 @@ try {
         <li><a href="usuarios.php">Cadastro Usuários</a></li> 
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
-        <li><a href="alertas.html">Alertas</a></li> 
+        <li><a href="alertas.php">Alertas</a></li> 
         <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">

@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <li><a href="usuarios.php">Cadastro Usuários</a></li> 
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
-        <li><a href="alertas.html">Alertas</a></li> 
+        <li><a href="alertas.php">Alertas</a></li> 
         <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
@@ -90,41 +90,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h1>Cadastro de Usuário</h1>
     
         <div>
-            <form action="" method="POST" class="funcionario">
-    <!-- Campo oculto para enviar o ID durante a edição -->
-            <input type="hidden" name="id_usuario" value="<?= $usuarioParaEditar['id'] ?? '' ?>">
+            <form action="" method="POST" class="funcionario" >
+                <label for="nome-usuario">Nome do Usuário:</label>
+                <input type="text" id="nome-usuario" name="nome-usuario" required> 
+            
+                <label for="email-usuario">Email do usuário:</label>
+                <input type="email" id="email-usuario" name="email-usuario" required> 
+            
+                <label for="cpf-usuario">CPF do usuário:</label>
+                <input type="number" id="cpf-usuario" name="cpf-usuario" maxlength="11" required>
 
-            <label for="nome-usuario">Nome do Usuário:</label>
-            <input type="text" id="nome-usuario" name="nome-usuario" value="<?= htmlspecialchars($usuarioParaEditar['nome'] ?? '') ?>" required> 
-
-            <label for="email-usuario">Email do usuário:</label>
-            <input type="email" id="email-usuario" name="email-usuario" value="<?= htmlspecialchars($usuarioParaEditar['email'] ?? '') ?>" required> 
-
-            <label for="cpf-usuario">CPF do usuário:</label>
-            <input type="text" id="cpf-usuario" name="cpf-usuario" value="<?= htmlspecialchars($usuarioParaEditar['cpf'] ?? '') ?>" required> 
-
-            <label for="senha">Senha para cadastro:</label>
-            <input type="password" id="senha" name="senha" <?= $usuarioParaEditar ? '' : 'required' ?>> 
-
-            <label for="confirmsenha">Confirmar senha:</label>
-            <input type="password" id="confirmsenha" name="confirmsenha" <?= $usuarioParaEditar ? '' : 'required' ?>> 
-
-            <fieldset>
-                <legend>Selecione o tipo:</legend>
-                <div class="tipoAdm">
-                    <input type="radio" id="tipo-admin" name="tipo-usuario" value="administrador" 
-                        <?= (($usuarioParaEditar['tipo'] ?? 'administrador') === 'administrador') ? 'checked' : '' ?> />
-                    <label for="tipo-admin">Administrador</label>
-                </div>
-                <div class="tipoFunc">
-                    <input type="radio" id="tipo-func" name="tipo-usuario" value="funcionario" 
-                        <?= (($usuarioParaEditar['tipo'] ?? '') === 'funcionario') ? 'checked' : '' ?> />
-                    <label for="tipo-func">Funcionario</label>
-                </div>
-            </fieldset>
-
-            <button type="submit"><?= $usuarioParaEditar ? 'Salvar Alterações' : 'Cadastrar' ?></button>
-         </form>
+            
+                <label for="senha">Senha para cadastro:</label>
+                <input type="password" id="senha" name="senha" required> 
+            
+                <label for="confirmsenha">Confirmar senha:</label>
+                <input type="password" id="confirmsenha" name="confirmsenha" required> 
+            
+                    <fieldset>
+                    <legend>Selecione o tipo:</legend>
+                    <div class="tipoAdm">
+                        <input type="radio" id="tipo-admin" name="tipo-usuario" value="administrador" checked />
+                        <label for="tipo-admin">Administrador</label>
+                    </div>
+                    <div class="tipoFunc">
+                        <input type="radio" id="tipo-func" name="tipo-usuario" value="funcionario" />
+                        <label for="tipo-func">Funcionario</label>
+                    </div>
+                </fieldset>
+            
+                    <button type="submit">Cadastrar</button>
+            </form>
             </div>
             
            
@@ -132,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
         
         
-<script type="module" src="../js/usuarios.js"></script>
+<script  src="../js/usuarios.js"></script>
 </main>
 </body>
 </html>

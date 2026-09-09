@@ -1,5 +1,4 @@
 // Importações de estado e persistência global (se usar o módulo state.js)
-// Importe conforme sua estrutura de pastas, ou use variáveis locais
 import { 
     configuracoesAlertas, 
     setConfiguracoesAlertas, 
@@ -37,34 +36,41 @@ function configurarEventos() {
 }
 
 export function salvarConfiguracoesAlertas(event) {
-    event.preventDefault();
+    // IMPORTANTE: O event.preventDefault() FOI REMOVIDO daqui.
+    // Isso permite que o formulário recarregue a página e envie os dados via POST para o PHP salvar no MySQL.
 
+    // Captura os dados baseados nas novas IDs ajustadas do HTML (Central + Prateleira)
+    const diasValidadeVal = parseInt(document.getElementById('dias-alerta-validade').value) || 30;
+    const caixasCentralVal = parseInt(document.getElementById('caixas-alerta-central').value) || 10;
+    const caixasPrateleiraVal = parseInt(document.getElementById('caixas-alerta-prateleira').value) || 5;
+    const intervaloMinutosVal = parseInt(document.getElementById('intervalo-alerta').value) || 15;
+
+    // ATUALIZAÇÃO DO ESTADO INTERNO DO JAVASCRIPT / LOCALSTORAGE
     const novasConfigs = {
-        diasAntesValidade: parseInt(document.getElementById('dias-alerta-validade').value) || 30,
-        caixasMinimas: parseInt(document.getElementById('caixas-alerta-estoque').value) || 10,
-        intervaloMinutos: parseInt(document.getElementById('intervalo-alerta').value) || 15
+        diasAntesValidade: diasValidadeVal,
+        caixasMinimasCentral: caixasCentralVal,
+        caixasMinimasPrateleira: caixasPrateleiraVal,
+        caixasMinimas: caixasCentralVal, // Mantém compatibilidade legada se houver
+        intervaloMinutos: intervaloMinutosVal
     };
 
     setConfiguracoesAlertas(novasConfigs);
     localStorage.setItem('configuracoesAlertas', JSON.stringify(novasConfigs));
 
-    // Limpa o histórico antigo para recalcular sob as novas regras
+    // Limpa o histórico antigo para recalcular sob as novas regras após o recarregamento
     localStorage.removeItem('historicoAlertas');
-
-    processarAlertas(true);
-    iniciarMonitoramentoAlertas();
-
-    alert('Configurações salvas e alertas recalculados com sucesso!');
 }
 
 export function preencherFormularioAlertas() {
     const dias = document.getElementById('dias-alerta-validade');
-    const caixas = document.getElementById('caixas-alerta-estoque');
+    const caixasCentral = document.getElementById('caixas-alerta-central');
+    const caixasPrateleira = document.getElementById('caixas-alerta-prateleira');
     const intervalo = document.getElementById('intervalo-alerta');
 
-    if (dias) dias.value = configuracoesAlertas.diasAntesValidade;
-    if (caixas) caixas.value = configuracoesAlertas.caixasMinimas;
-    if (intervalo) intervalo.value = String(configuracoesAlertas.intervaloMinutos);
+    if (dias) dias.value = configuracoesAlertas.diasAntesValidade || 30;
+    if (caixasCentral) caixasCentral.value = configuracoesAlertas.caixasMinimasCentral || configuracoesAlertas.caixasMinimas || 10;
+    if (caixasPrateleira) caixasPrateleira.value = configuracoesAlertas.caixasMinimasPrateleira || 5;
+    if (intervalo) intervalo.value = String(configuracoesAlertas.intervaloMinutos || 15);
 }
 
 export function iniciarMonitoramentoAlertas() {
@@ -80,11 +86,15 @@ export function processarAlertas(forcarRegistro = false) {
     const alertasEncontrados = [];
     const agora = new Date().toISOString();
 
+    // Definição segura dos parâmetros para o processamento de regras locais
+    const diasLimite = configuracoesAlertas.diasAntesValidade || 30;
+    const estoqueMinimoCentral = configuracoesAlertas.caixasMinimasCentral || configuracoesAlertas.caixasMinimas || 10;
+
     produtosEstoque.forEach(prod => {
         const dataValidade = converterDataBrParaDate(prod.validade);
         const diasRestantes = dataValidade ? diferencaEmDias(dataValidade) : null;
 
-        if (diasRestantes !== null && diasRestantes <= configuracoesAlertas.diasAntesValidade) {
+        if (diasRestantes !== null && diasRestantes <= diasLimite) {
             const status = diasRestantes <= 0 ? 'critico' : 'aviso';
             const mensagem = diasRestantes <= 0
                 ? `O produto ${prod.nome} do lote ${prod.lote} está com a validade vencida e precisa de ação imediata.`
@@ -102,8 +112,8 @@ export function processarAlertas(forcarRegistro = false) {
             });
         }
 
-        if ((prod.caixas || 0) <= configuracoesAlertas.caixasMinimas) {
-            const status = (prod.caixas || 0) <= Math.max(1, Math.ceil(configuracoesAlertas.caixasMinimas / 2)) ? 'critico' : 'aviso';
+        if ((prod.caixas || 0) <= estoqueMinimoCentral) {
+            const status = (prod.caixas || 0) <= Math.max(1, Math.ceil(estoqueMinimoCentral / 2)) ? 'critico' : 'aviso';
             const mensagem = `O produto ${prod.nome} está com apenas ${prod.caixas || 0} caixa(s) no estoque central.`;
 
             alertasEncontrados.push({
@@ -206,16 +216,15 @@ function formatarDataHora(dataISO) {
 
 function converterDataBrParaDate(dataBr) {
     if (!dataBr) return null;
-    if (dataBr.includes('-')) return new Date(`${dataBr}T00:00:00`);
     const partes = dataBr.split('/');
     if (partes.length !== 3) return null;
-    return new Date(`${partes[2]}-${partes[1]}-${partes[0]}T00:00:00`);
+    return new Date(partes[2], partes[1] - 1, partes[0]);
 }
 
-function diferencaEmDias(dataFutura) {
+function diferencaEmDias(dataAlvo) {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-    const alvo = new Date(dataFutura);
-    alvo.setHours(0, 0, 0, 0);
-    return Math.ceil((alvo - hoje) / (1000 * 60 * 60 * 24));
+    dataAlvo.setHours(0, 0, 0, 0);
+    const diferencaMs = dataAlvo.getTime() - hoje.getTime();
+    return Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
 }
