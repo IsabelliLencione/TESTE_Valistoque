@@ -1,22 +1,58 @@
 <?php
 require_once __DIR__ . '/../php/config.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+$usuarioParaEditar = null;
 
-if ($_POST['senha'] !== $_POST['confirmsenha']) { 
-    die("As senhas não são iguais!"); 
+// 1. Se veio 'editar_id' na URL, busca os dados no banco para preencher o formulário
+if (isset($_GET['editar_id'])) {
+    $idEditar = filter_input(INPUT_GET, 'editar_id', FILTER_VALIDATE_INT);
+    if ($idEditar) {
+        $stmt = $pdo->prepare("SELECT id, nome, email, cpf, tipo FROM usuarios WHERE id = :id");
+        $stmt->bindValue(':id', $idEditar, PDO::PARAM_INT);
+        $stmt->execute();
+        $usuarioParaEditar = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
-    $sql = "INSERT INTO usuarios (nome, email, cpf, senha, tipo) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $_POST['nome-usuario'],
-        $_POST['email-usuario'],  
-        $_POST['cpf-usuario'],
-        $_POST['senha'],
-        $_POST['tipo-usuario']
-    ]);
-    exit;
+// 2. Processamento do Envio do Formulário (POST)
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id_usuario = filter_input(INPUT_POST, 'id_usuario', FILTER_VALIDATE_INT);
+    $nome = $_POST['nome-usuario'];
+    $email = $_POST['email-usuario'];
+    $cpf = $_POST['cpf-usuario'];
+    $senha = $_POST['senha'];
+    $tipo = $_POST['tipo-usuario'];
+
+    try {
+        if ($id_usuario) {
+            // EDITAR: Se já existe um ID, faz UPDATE
+            if (!empty($senha)) {
+                // Atualiza com nova senha
+                $sql = "UPDATE usuarios SET nome = ?, email = ?, cpf = ?, senha = ?, tipo = ? WHERE id = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$nome, $email, $cpf, $senha, $tipo, $id_usuario]);
+            } else {
+                // Atualiza mantendo a senha atual
+                $sql = "UPDATE usuarios SET nome = ?, email = ?, cpf = ?, tipo = ? WHERE id = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$nome, $email, $cpf, $tipo, $id_usuario]);
+            }
+        } else {
+            // CADASTRAR: Se não tem ID, faz INSERT
+            if ($senha !== $_POST['confirmsenha']) {
+                die("As senhas não são iguais!");
+            }
+            $sql = "INSERT INTO usuarios (nome, email, cpf, senha, tipo) VALUES (?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$nome, $email, $cpf, $senha, $tipo]);
+        }
+
+        header("Location: ListaUsuarios.php");
+        exit;
+
+    } catch (PDOException $e) {
+        die("Erro ao salvar usuário: " . $e->getMessage());
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -42,7 +78,7 @@ if ($_POST['senha'] !== $_POST['confirmsenha']) {
         <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
-            <a href="perfil.html">Perfil</a>
+            <a href="perfil.php">Perfil</a>
         </li> 
     </ul> 
 </nav>

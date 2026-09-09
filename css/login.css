@@ -1,0 +1,168 @@
+ @import url("https://fonts.googleapis.com/css2?family=Rationale&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Rationale", sans-serif;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #ffffff 70%, #4682b4 100%);
+        background-attachment: fixed;
+      }
+
+      .container-admin {
+        width: 420px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 30px 40px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(20px);
+      }
+
+      .container-admin h1 {
+        font-size: 36px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .login-box {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        margin: 15px 0;
+      }
+
+      .login-box input,
+      .login-box select {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        border-radius: 40px;
+        outline: none;
+        font-size: 16px;
+        color: black;
+        padding: 0 45px 0 20px;
+      }
+
+      .login-box select {
+        appearance: none;
+      }
+
+      .login-box input::placeholder {
+        color: #555;
+      }
+
+      .login-box i {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+      }
+
+      .botao {
+        width: 100%;
+        height: 45px;
+        background: #5ebddc;
+        border: none;
+        outline: none;
+        border-radius: 40px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+
+      .botao:hover {
+        background: transparent;
+        border: 2px solid #5ebddc;
+      }
+
+      .logo {
+        width: 700px;
+        height: auto;
+        max-width: 90%;
+        display: block;
+        margin: 0 auto;
+        object-fit: cover;
+        float: left;
+        margin-top: -40px;
+        margin-right: 130px;
+      }
+
+      .nome {
+        font-family: Georgia, serif;
+        margin: 0;
+        line-height: 1;
+        position: absolute;
+        top: 75%;
+        left: 32%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+        font-size: 50px;
+        color: rgb(78, 78, 230);
+      }
+
+      .cor-diferente {
+        color: rgb(52, 217, 52);
+      }
+
+      .voltar {
+        text-decoration: none;
+        color: gray;
+      }
+
+      .baixo {
+        font-family: "Quicksand", sans-serif;
+        font-size: 12px;
+        text-align: center;
+        color: black;
+        margin-top: 18px;
+      }
+
+      .links-acao {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+
+      .link-acao {
+        color: #2c6f91;
+        text-decoration: none;
+        font-size: 14px;
+        margin-top: -5px;
+      }
+
+      .link-acao:hover {
+        text-decoration: underline;
+      }
+
+      .credenciais-teste {
+        margin-top: 18px;
+        margin-bottom: 15px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: rgba(94, 189, 220, 0.12);
+        color: #24576d;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .credenciais-teste strong {
+        color: #163847;
+      }
+  

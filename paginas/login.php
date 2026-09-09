@@ -1,0 +1,82 @@
+<?php
+require_once __DIR__ . "/../php/config.php";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+if ($_POST['senha'] !== $_POST['confirmsenha']) { 
+    die("Senha incorreta"); 
+}
+if ($_POST['email'] !== $_POST['confirmemail']) { 
+    die("Email incorreto"); 
+}
+if ($_POST['senha'] !== $_POST['confirmsenha']) { 
+    die("As senhas não são iguais!"); 
+}
+}
+?>
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+     <div>
+      <img src="logo.png" alt="Logo do Sistema" class="logo" />
+      <h1 class="nome">Valis<span class="cor-diferente">to</span>que</h1>
+    </div>
+    <main class="container-admin">
+      <form id="login-form">
+        <h1>Login</h1>
+        <p
+          style="
+            text-align: center;
+            color: #4d6670;
+            margin-top: -8px;
+            margin-bottom: 10px;
+          "
+        >
+          Escolha o perfil e entre no protótipo.
+        </p>
+
+        <div class="login-box">
+          <input type="email" id="email" placeholder="Email" required />
+          <i class="bx bxs-user"></i>
+        </div>
+
+        <div class="login-box">
+          <input type="password" id="senha" placeholder="Senha" required />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <div class="login-box">
+          <select id="perfil" required>
+            <option value="administrador">Administrador</option>
+            <option value="funcionario">Funcionário</option>
+          </select>
+          <i class="bx bxs-briefcase"></i>
+        </div>
+
+        <div class="links-acao">
+          <a href="recuperasenha.html" class="link-acao">Esqueci minha senha</a>
+          <a href="Principal.html" class="link-acao">Voltar ao início</a>
+        </div>
+
+        <div class="credenciais-teste">
+          <strong>Perfis de teste:</strong><br />
+          Admin: admin@valistoque.com / admin123<br />
+          Funcionário: funcionario@valistoque.com / func123
+        </div>
+
+        <button type="submit" class="botao">Entrar</button>
+        <p class="baixo">
+          &copy; 2026 Valistoque. Todos os direitos reservados.
+        </p>
+      </form>
+    </main>
+</body>
+</html>

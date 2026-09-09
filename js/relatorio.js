@@ -29,7 +29,24 @@ function configurarEventos() {
 }
 
 export function mudarMes(direcao) {
-    dataAtualRelatorio.setMonth(dataAtualRelatorio.getMonth() + direcao);
+    // 1. Cria uma cópia da data exibida atualmente para testar a mudança
+    const novaData = new Date(dataAtualRelatorio);
+    novaData.setMonth(novaData.getMonth() + direcao);
+
+    // 2. Obtém a data real de hoje
+    const hoje = new Date();
+
+    // 3. Converte para um comparador de ano e mês (ex: 202609)
+    const periodoNovaData = novaData.getFullYear() * 100 + novaData.getMonth();
+    const periodoHoje = hoje.getFullYear() * 100 + hoje.getMonth();
+
+    // 4. Bloqueia se a nova data for posterior ao mês atual
+    if (periodoNovaData > periodoHoje) {
+        return; // Interrompe a execução
+    }
+
+    // 5. Se for válida, atualiza a data e renderiza o relatório
+    dataAtualRelatorio = novaData;
     atualizarCabecalhoData();
     renderizarRelatorio();
 }
@@ -37,9 +54,20 @@ export function mudarMes(direcao) {
 function atualizarCabecalhoData() {
     const txtMes = document.getElementById('txt-mes');
     const txtAno = document.getElementById('txt-ano');
+    const setas = document.querySelectorAll('.seta-mes');
 
     if (txtMes) txtMes.innerText = nomesMeses[dataAtualRelatorio.getMonth()];
     if (txtAno) txtAno.innerText = dataAtualRelatorio.getFullYear();
+
+    // Desabilita a seta de avançar (direita) se já estiver no mês atual
+    if (setas.length >= 2) {
+        const hoje = new Date();
+        const noMesAtual = (dataAtualRelatorio.getFullYear() === hoje.getFullYear()) && 
+                           (dataAtualRelatorio.getMonth() === hoje.getMonth());
+
+        setas[1].style.opacity = noMesAtual ? '0.3' : '1';
+        setas[1].style.cursor = noMesAtual ? 'not-allowed' : 'pointer';
+    }
 }
 
 export function renderizarRelatorio() {

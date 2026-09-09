@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . "/../php/config.php";
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,11 +22,11 @@
         <li><a href="usuarios.php">Cadastro Usuários</a></li> 
         <li><a href="prateleira.html">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
-        <li><a href="alertas.php">Alertas</a></li> 
+        <li><a href="alertas.html">Alertas</a></li> 
          <li><a href="ListaUsuarios.php">Usuários</a></li>
 
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
-            <a href="perfil.html">Perfil</a>
+            <a href="perfil.php">Perfil</a>
         </li> 
     </ul> 
 </nav>
@@ -31,17 +37,17 @@
     <div class="container">
 
         <!-- Topo: Foto e Título -->
-        <div class="profile-header">
-            <div class="avatar-wrapper" onclick="triggerSelectFile()">
-                <img id="profile-img" src="https://via.placeholder.com/150" alt="Foto de Perfil">
-                <div class="avatar-overlay">
-                    <span>ADICIONAR</span>
-                </div>
-            </div>
-            <input type="file" id="file-input" accept="image/*" onchange="previewImage(event)" style="display: none;">
-
-            <h2 id="titulo-perfil-admin">Perfil do Administrador</h2>
+      <div class="profile-header">
+        <div class="avatar-wrapper" id="avatar-wrapper">
+            <img id="profile-img" src="https://via.placeholder.com/150" alt="Foto de Perfil">
+         <div class="avatar-overlay">
+             <span>EDITAR</span>
+         </div>
         </div>
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+        <h2 id="titulo-perfil-admin">Perfil do Administrador</h2>
+    </div>
 
         <form id="profile-form" onsubmit="saveProfile(event)">
             <!-- Campo Nome -->
@@ -73,7 +79,10 @@
         </form>
 
     </div>
+</div>
 <script type="module" src="../js/perfil.js"></script>
+    
+</script>
 </main>
 </body>
 </html>

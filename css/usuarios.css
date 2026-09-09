@@ -1,57 +1,129 @@
-        /* Estilização Geral e Tabelas */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f6; padding-left: 260px; }
-       
-        
-        /* Formulários Comuns */
-        #secao-form{ background-color: #e6e6e6; padding: 20px; border-radius: 8px; }
-        h1 { font-family: sans-serif; font-weight: bold; margin-bottom: 20px; color: #3b201e; }
-        
-        label { display: block; font-family: sans-serif; font-style: italic; color: #064b78; margin-bottom: 5px; font-size: 14px; }
-        input, select { width: 100%; padding: 12px 15px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #fff; }
-        input:focus, select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
-        
-        button { width: 100%; background-color: #3498db; color: #ffffff; border-radius: 8px; font-size: 18px; padding: 15px; border: 1px solid #2c3e50; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #2980b9; }
-        
- 
-/*----------------------------------------------------------------------------------------------*/
+/* Estilização Geral e Tabelas */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
+body { 
+    background-color: #f4f7f6; /* Fundo claro igual ao style.css */
+    padding-left: 260px; 
+}
 
+main { 
+    padding: 40px; 
+}
 
+/* Quadro/Container do Formulário */
+#secao-produto, .secao-form { 
+    background-color: #e6e6e6; 
+    padding: 20px; 
+    border-radius: 8px; 
+}
 
-             /*Parte de selecionar adm ou funcionario*/
-        fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
-        legend {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #333;
-            font-family: sans-serif;
-         }
+h1 { 
+    font-family: sans-serif; 
+    font-weight: bold; 
+    margin-bottom: 20px; 
+    color: #3b201e; 
+}
 
-        .tipoAdm, .tipoFunc {
-            display: inline-flex; 
-            align-items: center;  
-            margin-right: 20px;   
-            font-family: sans-serif;
-            cursor: pointer;
-        }
+label { 
+    display: block; 
+    font-family: sans-serif; 
+    font-style: italic; 
+    color: #064b78; 
+    margin-bottom: 5px; 
+    font-size: 14px; 
+}
 
-        input[type="radio"] {
-            margin-right: 6px;
-            cursor: pointer;
-        }
+input:not([type="radio"]), select { 
+    width: 100%; 
+    padding: 12px 15px; 
+    margin-bottom: 20px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    font-size: 16px; 
+    box-sizing: border-box; 
+    background-color: #fff; 
+}
 
+input:not([type="radio"]):focus, select:focus { 
+    outline: none; 
+    border-color: #3498db; 
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); 
+}
 
+button { 
+    width: 100%; 
+    background-color: #3498db; 
+    color: #ffffff; 
+    border-radius: 8px; 
+    font-size: 18px; 
+    padding: 15px; 
+    border: 1px solid #2c3e50; 
+    cursor: pointer; 
+    transition: background 0.3s; 
+}
 
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #3498db; color: white; }
-        tr:hover { background-color: #f1f1f1; }
+button:hover { 
+    background-color: #2980b9; 
+}
 
+/* Seleção de Tipo de Usuário (Radio) */
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
 
+legend {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #064b78;
+    font-family: sans-serif;
+    font-style: italic;
+}
+
+.tipoAdm, .tipoFunc {
+    display: inline-flex; 
+    align-items: center;   
+    margin-right: 20px;   
+    font-family: sans-serif;
+    color: #3b201e;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    margin-right: 6px;
+    cursor: pointer;
+    width: auto; 
+    margin-bottom: 0;
+}
+
+/* Tabelas */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: white; 
+    margin-top: 20px; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+}
+
+th, td { 
+    padding: 12px 15px; 
+    text-align: left; 
+    border-bottom: 1px solid #ddd; 
+}
+
+th { 
+    background-color: #3498db; 
+    color: white; 
+}
+
+tr:hover { 
+    background-color: #f1f1f1; 
+}
