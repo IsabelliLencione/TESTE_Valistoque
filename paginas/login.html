@@ -2,10 +2,15 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Login - Valistoque</title>
+
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Rationale&display=swap");
 
@@ -21,7 +26,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(to bottom, #ffffff 70%, #4682b4 100%);
+            background: linear-gradient(to bottom,
+                    #ffffff 70%,
+                    #4682b4 100%);
             background-attachment: fixed;
         }
 
@@ -159,134 +166,199 @@
         .link-acao:hover {
             text-decoration: underline;
         }
-
-        .credenciais-teste {
-            margin-top: 18px;
-            margin-bottom: 15px;
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: rgba(94, 189, 220, 0.12);
-            color: #24576d;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .credenciais-teste strong {
-            color: #163847;
-        }
     </style>
+
 </head>
 
 <body>
+
     <div>
+
         <img src="logo.PNG" alt="Logo do Sistema" class="logo" />
-        <h1 class="nome">Valis<span class="cor-diferente">to</span>que</h1>
+
+        <h1 class="nome">
+            Valis<span class="cor-diferente">to</span>que
+        </h1>
+
     </div>
+
     <main class="container-admin">
+
         <form id="login-form">
+
             <h1>Login</h1>
+
             <p style="
-            text-align: center;
-            color: #4d6670;
-            margin-top: -8px;
-            margin-bottom: 10px;
-          ">
+                    text-align: center;
+                    color: #4d6670;
+                    margin-top: -8px;
+                    margin-bottom: 10px;
+                ">
                 Escolha o perfil e entre no protótipo.
             </p>
 
             <div class="login-box">
+
                 <input type="email" id="email" placeholder="Email" required />
+
                 <i class="bx bxs-user"></i>
+
             </div>
 
             <div class="login-box">
+
                 <input type="password" id="senha" placeholder="Senha" required />
+
                 <i class="bx bxs-lock-alt"></i>
+
             </div>
 
             <div class="login-box">
+
                 <select id="perfil" required>
-                    <option value="administrador">Administrador</option>
-                    <option value="funcionario">Funcionário</option>
+
+                    <option value="administrador">
+                        Administrador
+                    </option>
+
+                    <option value="funcionario">
+                        Funcionário
+                    </option>
+
                 </select>
+
                 <i class="bx bxs-briefcase"></i>
+
             </div>
 
             <div class="links-acao">
-                <a href="recuperaçãodesenha.html" class="link-acao">Esqueci minha senha</a>
-                <a href="Principal.html" class="link-acao">Voltar ao início</a>
+
+                <a href="recuperaçãodesenha.html" class="link-acao">
+                    Esqueci minha senha
+                </a>
+
+                <a href="../Principal.html" class="link-acao">
+                    Voltar ao início
+                </a>
+
             </div>
 
+            <button type="submit" class="botao">
+                Entrar
+            </button>
 
-            <button type="submit" class="botao">Entrar</button>
             <p class="baixo">
                 &copy; 2026 Valistoque. Todos os direitos reservados.
             </p>
+
         </form>
+
     </main>
 
     <script>
-        const formLogin = document.getElementById("login-form");
 
-        formLogin.addEventListener("submit", (event) => {
-            event.preventDefault();
+        const formLogin =
+            document.getElementById("login-form");
 
-            const email = document
-                .getElementById("email")
-                .value.trim()
-                .toLowerCase();
-            const senha = document.getElementById("senha").value.trim();
-            const perfil = document.getElementById("perfil").value;
+        formLogin.addEventListener(
+            "submit",
+            async (event) => {
 
-            // Mapeamento das contas e seus destinos
-            const usuarioDemo = {
-                administrador: {
-                    email: "admin@valistoque.com",
-                    senha: "admin123",
-                    destino: "interiorAdm.html#relatorio",
-                    nome: "Administrador",
-                },
-                // Trecho a ser ajustado no login.html
-                funcionario: {
-                    email: "funcionario@valistoque.com",
-                    senha: "func123",
-                    destino: "interiorFunc.html#alertas", // <--- Mudar para carregar direto no interiorFunc com a aba de Alertas
-                    nome: "Funcionário",
-                },
-            };
+                event.preventDefault();
 
-            if (!email || !senha) {
-                alert("Preencha email e senha.");
-                return;
+                const email =
+                    document
+                        .getElementById("email")
+                        .value
+                        .trim()
+                        .toLowerCase();
+
+                const senha =
+                    document
+                        .getElementById("senha")
+                        .value
+                        .trim();
+
+                const perfil =
+                    document
+                        .getElementById("perfil")
+                        .value;
+
+                if (!email || !senha) {
+
+                    alert("Preencha email e senha.");
+
+                    return;
+                }
+
+                const dados = new FormData();
+
+                dados.append("email", email);
+                dados.append("senha", senha);
+                dados.append("perfil", perfil);
+
+                try {
+
+                    const resposta =
+                        await fetch("login.php", {
+                            method: "POST",
+                            body: dados
+                        });
+
+                    const resultado =
+                        await resposta.json();
+
+                    if (resultado.sucesso) {
+
+                        const dadosUsuario = {
+
+                            id: resultado.usuario.id,
+
+                            email:
+                                resultado.usuario.email,
+
+                            perfil:
+                                resultado.usuario.tipo,
+
+                            nome:
+                                resultado.usuario.nome
+
+                        };
+
+                        localStorage.setItem(
+                            "valistoqueUsuario",
+                            JSON.stringify(dadosUsuario)
+                        );
+
+                        localStorage.setItem(
+                            "perfilUsuario",
+                            JSON.stringify(dadosUsuario)
+                        );
+
+                        window.location.href =
+                            "../index.html";
+
+                    } else {
+
+                        alert(resultado.mensagem);
+
+                    }
+
+                } catch (erro) {
+
+                    console.error(erro);
+
+                    alert(
+                        "Erro ao conectar com o servidor."
+                    );
+
+                }
+
             }
+        );
 
-            const contaSelecionada = usuarioDemo[perfil];
-
-            // Valida se o email e a senha correspondem exatamente ao perfil selecionado
-            if (
-                email === contaSelecionada.email &&
-                senha === contaSelecionada.senha
-            ) {
-                // Salva os dados do usuário autenticado no localStorage
-                const dadosUsuario = {
-                    email: email,
-                    perfil: perfil,
-                    nome: contaSelecionada.nome,
-                };
-
-                localStorage.setItem(
-                    "valistoqueUsuario",
-                    JSON.stringify(dadosUsuario),
-                );
-                localStorage.setItem("perfilUsuario", JSON.stringify(dadosUsuario));
-
-                // Redireciona para o destino (no caso do funcionário, tela_alerta.html)
-                window.location.href = contaSelecionada.destino;
-            } else {
-                alert("E-mail ou senha incorretos para o perfil selecionado.");
-            }
-        });
     </script>
+
 </body>
 
 </html>
