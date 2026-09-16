@@ -19,6 +19,11 @@
 -- Table structure for table `estoque`
 --
 
+CREATE DATABASE valistoque_testes;
+
+use valistoque_testes;
+
+
 DROP TABLE IF EXISTS `estoque`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
