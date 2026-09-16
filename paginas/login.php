@@ -26,7 +26,7 @@ if ($_POST['senha'] !== $_POST['confirmsenha']) {
 </head>
 <body>
      <div>
-      <img src="logo.png" alt="Logo do Sistema" class="logo" />
+      <img src="../logo/logo.png" alt="Logo do Sistema" class="logo" />
       <h1 class="nome">Valis<span class="cor-diferente">to</span>que</h1>
     </div>
     <main class="container-admin">
