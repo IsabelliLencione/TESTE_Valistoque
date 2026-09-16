@@ -1,0 +1,410 @@
+<!doctype html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Redefinir senha - Valistoque</title>
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Rationale&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Rationale", sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+
+            background: linear-gradient(to bottom,
+                    #ffffff 70%,
+                    #4682b4 100%);
+
+            background-attachment: fixed;
+        }
+
+        .container-admin {
+            width: 420px;
+
+            background-color: rgba(255, 255, 255, 0.1);
+
+            border: 2px solid rgba(255, 255, 255, 0.2);
+
+            border-radius: 10px;
+
+            padding: 30px 40px;
+
+            box-shadow:
+                0 0 10px rgba(0, 0, 0, 0.2);
+
+            backdrop-filter: blur(20px);
+        }
+
+        .container-admin h1 {
+            font-size: 36px;
+
+            text-align: center;
+
+            margin-bottom: 20px;
+        }
+
+        .login-box {
+            position: relative;
+
+            width: 100%;
+            height: 50px;
+
+            margin: 15px 0;
+        }
+
+        .login-box input {
+            width: 100%;
+            height: 100%;
+
+            background: transparent;
+
+            border: 2px solid rgba(0, 0, 0, 0.2);
+
+            border-radius: 40px;
+
+            outline: none;
+
+            font-size: 16px;
+
+            color: black;
+
+            padding: 0 45px 0 20px;
+        }
+
+        .login-box input::placeholder {
+            color: #555;
+        }
+
+        .login-box i {
+            position: absolute;
+
+            right: 20px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            font-size: 20px;
+
+            color: #333;
+        }
+
+        .botao {
+            width: 100%;
+
+            height: 45px;
+
+            background: #5ebddc;
+
+            border: none;
+
+            outline: none;
+
+            border-radius: 40px;
+
+            box-shadow:
+                0 0 10px rgba(0, 0, 0, 0.1);
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            color: #333;
+
+            font-weight: 600;
+
+            transition: 0.3s;
+        }
+
+        .botao:hover {
+            background: transparent;
+
+            border: 2px solid #5ebddc;
+        }
+
+        .logo {
+            width: 700px;
+
+            height: auto;
+
+            max-width: 90%;
+
+            display: block;
+
+            margin: 0 auto;
+
+            object-fit: cover;
+
+            float: left;
+
+            margin-top: -40px;
+
+            margin-right: 130px;
+        }
+
+        .nome {
+            font-family: Georgia, serif;
+
+            margin: 0;
+
+            line-height: 1;
+
+            position: absolute;
+
+            top: 75%;
+
+            left: 32%;
+
+            transform: translate(-50%, -50%);
+
+            font-weight: bold;
+
+            font-size: 50px;
+
+            color: rgb(78, 78, 230);
+        }
+
+        .cor-diferente {
+            color: rgb(52, 217, 52);
+        }
+
+        .voltar {
+            display: block;
+
+            text-decoration: none;
+
+            color: gray;
+
+            margin-bottom: 15px;
+        }
+
+        .voltar:hover {
+            text-decoration: underline;
+        }
+
+        .baixo {
+            font-family: "Quicksand", sans-serif;
+
+            font-size: 12px;
+
+            text-align: center;
+
+            color: black;
+
+            margin-top: 18px;
+        }
+
+        .explicacao {
+            text-align: center;
+
+            color: #4d6670;
+
+            margin-top: -8px;
+
+            margin-bottom: 15px;
+
+            line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+
+            .container-admin {
+                width: 90%;
+                padding: 25px;
+            }
+
+            .nome {
+                font-size: 38px;
+            }
+
+            .logo {
+                width: 500px;
+            }
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div>
+
+        <img src="logo.PNG" alt="Logo do Sistema" class="logo" />
+
+        <h1 class="nome">
+            Valis<span class="cor-diferente">to</span>que
+        </h1>
+
+    </div>
+
+
+    <main class="container-admin">
+
+        <form id="reset-form">
+
+            <a href="login.html" class="voltar">
+                &larr; Voltar para o login
+            </a>
+
+
+            <h1>
+                Redefinir senha
+            </h1>
+
+
+            <p class="explicacao">
+                Digite o código recebido e sua nova senha.
+            </p>
+
+
+            <div class="login-box">
+
+                <input type="email" id="email" placeholder="Email" required />
+
+                <i class="bx bxs-user"></i>
+
+            </div>
+
+
+            <div class="login-box">
+
+                <input type="text" id="codigo" inputmode="numeric" maxlength="6" placeholder="Código de 6 dígitos"
+                    required />
+
+                <i class="bx bxs-key"></i>
+
+            </div>
+
+
+            <div class="login-box">
+
+                <input type="password" id="senha" minlength="6" placeholder="Nova senha" required />
+
+                <i class="bx bxs-lock-alt"></i>
+
+            </div>
+
+
+            <div class="login-box">
+
+                <input type="password" id="confirmar_senha" minlength="6" placeholder="Confirmar nova senha" required />
+
+                <i class="bx bxs-lock"></i>
+
+            </div>
+
+
+            <button type="submit" class="botao">
+                Salvar nova senha
+            </button>
+
+
+            <p class="baixo">
+                &copy; 2026 Valistoque. Todos os direitos reservados.
+            </p>
+
+        </form>
+
+    </main>
+
+
+    <script src="js/api.js"></script>
+
+
+    <script>
+
+        const form = document.getElementById("reset-form");
+
+        const email = document.getElementById("email");
+
+        const codigo = document.getElementById("codigo");
+
+        const senha = document.getElementById("senha");
+
+        const confirmarSenha =
+            document.getElementById("confirmar_senha");
+
+
+        email.value =
+            sessionStorage.getItem("valistoqueRecoveryEmail") || "";
+
+
+        form.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+
+            if (senha.value !== confirmarSenha.value) {
+
+                alert("As senhas não são iguais.");
+
+                return;
+
+            }
+
+
+            try {
+
+                await apiRequest(
+                    "auth/redefinir_senha.php",
+                    {
+                        method: "POST",
+
+                        body: {
+                            email: email.value,
+
+                            codigo: codigo.value,
+
+                            senha: senha.value,
+
+                            confirmar_senha:
+                                confirmarSenha.value
+                        }
+                    }
+                );
+
+
+                alert(
+                    "Senha redefinida com sucesso."
+                );
+
+
+                sessionStorage.removeItem(
+                    "valistoqueRecoveryEmail"
+                );
+
+
+                window.location.href =
+                    "login.html";
+
+            } catch (err) {
+
+                alert(err.message);
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,82 +1,93 @@
 <?php
+
+header("Content-Type: application/json; charset=UTF-8");
+
 require_once __DIR__ . "/../php/config.php";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
-if ($_POST['senha'] !== $_POST['confirmsenha']) { 
-    die("Senha incorreta"); 
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Método não permitido."
+    ]);
+
+    exit;
 }
-if ($_POST['email'] !== $_POST['confirmemail']) { 
-    die("Email incorreto"); 
+
+$email = $_POST["email"] ?? "";
+$senha = $_POST["senha"] ?? "";
+$perfil = $_POST["perfil"] ?? "";
+
+$email = trim(strtolower($email));
+$senha = trim($senha);
+$perfil = trim($perfil);
+
+if ($email === "" || $senha === "" || $perfil === "") {
+
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Preencha todos os campos."
+    ]);
+
+    exit;
 }
-if ($_POST['senha'] !== $_POST['confirmsenha']) { 
-    die("As senhas não são iguais!"); 
+
+try {
+
+    $sql = "SELECT id, nome, email, cpf, senha, tipo
+            FROM usuarios
+            WHERE email = :email
+            AND tipo = :tipo
+            LIMIT 1";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        ":email" => $email,
+        ":tipo" => $perfil
+    ]);
+
+    $usuario = $stmt->fetch();
+
+    if (!$usuario) {
+
+        echo json_encode([
+            "sucesso" => false,
+            "mensagem" => "E-mail ou perfil incorreto."
+        ]);
+
+        exit;
+    }
+
+    if ($senha !== $usuario["senha"]) {
+
+        echo json_encode([
+            "sucesso" => false,
+            "mensagem" => "Senha incorreta."
+        ]);
+
+        exit;
+    }
+
+    echo json_encode([
+        "sucesso" => true,
+        "mensagem" => "Login realizado com sucesso.",
+        "usuario" => [
+            "id" => $usuario["id"],
+            "nome" => $usuario["nome"],
+            "email" => $usuario["email"],
+            "cpf" => $usuario["cpf"],
+            "tipo" => $usuario["tipo"]
+        ]
+    ]);
+
+} catch (PDOException $erro) {
+
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Erro no banco de dados: " . $erro->getMessage()
+    ]);
+
 }
-}
+
 ?>
-
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../css/login.css">
-</head>
-<body>
-     <div>
-      <img src="../logo/logo.png" alt="Logo do Sistema" class="logo" />
-      <h1 class="nome">Valis<span class="cor-diferente">to</span>que</h1>
-    </div>
-    <main class="container-admin">
-      <form id="login-form">
-        <h1>Login</h1>
-        <p
-          style="
-            text-align: center;
-            color: #4d6670;
-            margin-top: -8px;
-            margin-bottom: 10px;
-          "
-        >
-          Escolha o perfil e entre no protótipo.
-        </p>
-
-        <div class="login-box">
-          <input type="email" id="email" placeholder="Email" required />
-          <i class="bx bxs-user"></i>
-        </div>
-
-        <div class="login-box">
-          <input type="password" id="senha" placeholder="Senha" required />
-          <i class="bx bxs-lock-alt"></i>
-        </div>
-
-        <div class="login-box">
-          <select id="perfil" required>
-            <option value="administrador">Administrador</option>
-            <option value="funcionario">Funcionário</option>
-          </select>
-          <i class="bx bxs-briefcase"></i>
-        </div>
-
-        <div class="links-acao">
-          <a href="recuperasenha.html" class="link-acao">Esqueci minha senha</a>
-          <a href="Principal.html" class="link-acao">Voltar ao início</a>
-        </div>
-
-        <div class="credenciais-teste">
-          <strong>Perfis de teste:</strong><br />
-          Admin: admin@valistoque.com / admin123<br />
-          Funcionário: funcionario@valistoque.com / func123
-        </div>
-
-        <button type="submit" class="botao">Entrar</button>
-        <p class="baixo">
-          &copy; 2026 Valistoque. Todos os direitos reservados.
-        </p>
-      </form>
-    </main>
-</body>
-</html>
