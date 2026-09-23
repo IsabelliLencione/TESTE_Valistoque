@@ -1,6 +1,4 @@
--- =========================================================
--- BANCO DE DADOS VALISTOQUE
--- =========================================================
+
 
 CREATE DATABASE IF NOT EXISTS `valistoque_testes`
 DEFAULT CHARACTER SET utf8mb4
@@ -8,15 +6,9 @@ COLLATE utf8mb4_unicode_ci;
 
 USE `valistoque_testes`;
 
--- =========================================================
--- DESATIVAR CHAVES ESTRANGEIRAS
--- =========================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
 
--- =========================================================
--- APAGAR TABELAS EXISTENTES
--- =========================================================
 
 DROP TABLE IF EXISTS `alertas`;
 DROP TABLE IF EXISTS `prateleiras`;
@@ -24,15 +16,9 @@ DROP TABLE IF EXISTS `estoque`;
 DROP TABLE IF EXISTS `produto`;
 DROP TABLE IF EXISTS `usuarios`;
 
--- =========================================================
--- ATIVAR CHAVES ESTRANGEIRAS
--- =========================================================
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- =========================================================
--- TABELA: ESTOQUE
--- =========================================================
 
 CREATE TABLE `estoque` (
     `id_estoque` INT NOT NULL AUTO_INCREMENT,
@@ -48,9 +34,6 @@ CREATE TABLE `estoque` (
 DEFAULT CHARACTER SET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- =========================================================
--- TABELA: ALERTAS
--- =========================================================
 
 CREATE TABLE `alertas` (
     `id_alerta` INT NOT NULL AUTO_INCREMENT,
@@ -73,9 +56,6 @@ CREATE TABLE `alertas` (
 DEFAULT CHARACTER SET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- =========================================================
--- TABELA: PRATELEIRAS
--- =========================================================
 
 CREATE TABLE `prateleiras` (
     `id_prat` INT NOT NULL AUTO_INCREMENT,
@@ -98,9 +78,6 @@ CREATE TABLE `prateleiras` (
 DEFAULT CHARACTER SET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- =========================================================
--- TABELA: PRODUTO
--- =========================================================
 
 CREATE TABLE `produto` (
     `id_produto` INT NOT NULL AUTO_INCREMENT,
@@ -117,9 +94,6 @@ CREATE TABLE `produto` (
 DEFAULT CHARACTER SET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- =========================================================
--- TABELA: USUARIOS
--- =========================================================
 
 CREATE TABLE `usuarios` (
     `id` INT NOT NULL AUTO_INCREMENT,
@@ -140,9 +114,6 @@ CREATE TABLE `usuarios` (
 DEFAULT CHARACTER SET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- =========================================================
--- INSERIR USUÁRIOS
--- =========================================================
 
 INSERT INTO `usuarios`
 (
@@ -183,9 +154,6 @@ VALUES
     CURRENT_TIMESTAMP
 );
 
--- =========================================================
--- DADOS DE TESTE - PRODUTOS
--- =========================================================
 
 INSERT INTO `produto`
 (
@@ -222,9 +190,6 @@ VALUES
     '2027-03-10'
 );
 
--- =========================================================
--- DADOS DE TESTE - ESTOQUE
--- =========================================================
 
 INSERT INTO `estoque`
 (
@@ -257,9 +222,6 @@ VALUES
     0.50
 );
 
--- =========================================================
--- DADOS DE TESTE - PRATELEIRAS
--- =========================================================
 
 INSERT INTO `prateleiras`
 (
@@ -288,9 +250,6 @@ VALUES
     3
 );
 
--- =========================================================
--- DADOS DE TESTE - ALERTAS
--- =========================================================
 
 INSERT INTO `alertas`
 (
@@ -315,9 +274,6 @@ VALUES
     'Verificar data de validade do produto.'
 );
 
--- =========================================================
--- CONSULTAS PARA TESTAR
--- =========================================================
 
 SELECT * FROM `usuarios`;
 
@@ -328,10 +284,6 @@ SELECT * FROM `estoque`;
 SELECT * FROM `prateleiras`;
 
 SELECT * FROM `alertas`;
-
--- =========================================================
--- VERIFICAR RELACIONAMENTO ENTRE ESTOQUE E PRATELEIRAS
--- =========================================================
 
 SELECT
     e.id_estoque,
@@ -348,9 +300,7 @@ FROM `estoque` e
 LEFT JOIN `prateleiras` p
     ON e.id_estoque = p.id_estoque;
 
--- =========================================================
--- VERIFICAR ALERTAS DO ESTOQUE
--- =========================================================
+
 
 SELECT
     a.id_alerta,
@@ -361,7 +311,3 @@ SELECT
 FROM `alertas` a
 INNER JOIN `estoque` e
     ON a.id_estoque = e.id_estoque;
-
--- =========================================================
--- FIM DO BANCO VALISTOQUE
--- =========================================================
