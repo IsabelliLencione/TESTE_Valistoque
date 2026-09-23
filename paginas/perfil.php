@@ -53,7 +53,7 @@ require_once __DIR__ . "/../php/config.php";
             <!-- Campo Nome -->
             <div class="info-group">
                 <label class="label" for="user-name">Nome do usuário:</label>
-                <input type="text" id="user-name" class="input-field" value="Administrador Valistoque" readonly required>
+                <input type="text" id="user-name" class="input-field" value="Administrador" readonly required>
             </div>
 
             <!-- Campo E-mail -->
