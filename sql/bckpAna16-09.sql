@@ -311,3 +311,4 @@ SELECT
 FROM `alertas` a
 INNER JOIN `estoque` e
     ON a.id_estoque = e.id_estoque;
+
