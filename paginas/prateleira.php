@@ -17,7 +17,6 @@
 
 <body>
 
-
     <!-- Menu lateral -->
     <nav class="nav">
 
