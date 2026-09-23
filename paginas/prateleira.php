@@ -11,13 +11,12 @@
 
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/prateleira.css">
- 
+  
 
 </head>
 
 <body>
 
-    
     <!-- Menu lateral -->
     <nav class="nav">
 
@@ -40,7 +39,7 @@
             </li>
 
             <li>
-                <a href="prateleira.html">Prateleiras</a>
+                <a href="prateleira.php">Prateleiras</a>
             </li>
 
             <li>

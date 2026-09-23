@@ -20,7 +20,7 @@ require_once __DIR__ . "/../php/config.php";
         <li><a href="relatorio.html">Relatório</a></li> 
         <li><a href="produtos.php">Cadastro Produtos</a></li> 
         <li><a href="usuarios.php">Cadastro Usuários</a></li> 
-        <li><a href="prateleira.html">Prateleiras</a></li> 
+        <li><a href="prateleira.php">Prateleiras</a></li> 
         <li><a href="estoque.php">Estoque Central</a></li> 
         <li><a href="alertas.html">Alertas</a></li> 
          <li><a href="ListaUsuarios.php">Usuários</a></li>
@@ -53,7 +53,7 @@ require_once __DIR__ . "/../php/config.php";
             <!-- Campo Nome -->
             <div class="info-group">
                 <label class="label" for="user-name">Nome do usuário:</label>
-                <input type="text" id="user-name" class="input-field" value="Administrador Valistoque" readonly required>
+                <input type="text" id="user-name" class="input-field" value="Administrador" readonly required>
             </div>
 
             <!-- Campo E-mail -->
