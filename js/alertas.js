@@ -1,230 +1,1020 @@
-// Importações de estado e persistência global (se usar o módulo state.js)
-import { 
-    configuracoesAlertas, 
-    setConfiguracoesAlertas, 
-    historicoAlertas, 
-    produtosEstoque, 
-    carregarDadosDoStorage 
-} from './state.js';
+let intervaloMonitoramento = null;
+let intervaloAtual = null;
 
-let filtroAtualAlertas = 'todos';
-let intervaloMonitoramentoAlertas = null;
+let filtroAtual = "todos";
 
-// Inicialização da tela ao carregar
-document.addEventListener('DOMContentLoaded', () => {
-    carregarDadosDoStorage();
-    preencherFormularioAlertas();
-    processarAlertas();
-    iniciarMonitoramentoAlertas();
-    configurarEventos();
+let filaAlertas = [];
+let exibindoAlerta = false;
+
+
+/* =========================================================
+   SWEETALERT2
+========================================================= */
+
+const Toast = Swal.mixin({
+
+    toast: true,
+
+    position: "top-end",
+
+    showConfirmButton: false,
+
+    timer: 6000,
+
+    timerProgressBar: true,
+
+    didOpen: (toast) => {
+
+        toast.addEventListener(
+            "mouseenter",
+            Swal.stopTimer
+        );
+
+        toast.addEventListener(
+            "mouseleave",
+            Swal.resumeTimer
+        );
+    }
+
 });
 
-// Configuração de Event Listeners (substitui os atalhos onclick/onsubmit do HTML)
-function configurarEventos() {
-    const formConfig = document.getElementById('form-config-alertas');
-    if (formConfig) {
-        formConfig.addEventListener('submit', salvarConfiguracoesAlertas);
+
+/* =========================================================
+   NORMALIZAR TEXTO
+========================================================= */
+
+function normalizarTexto(texto) {
+
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
+}
+
+
+/* =========================================================
+   DEFINIR NÍVEL DO ALERTA
+========================================================= */
+
+function ehCritico(tipo) {
+
+    const texto =
+        normalizarTexto(tipo);
+
+
+    return (
+        texto === "produto vencido" ||
+        texto === "estoque central baixo"
+    );
+
+}
+
+
+/* =========================================================
+   DEFINIR CATEGORIA DO ALERTA
+========================================================= */
+
+function categoriaAlerta(tipo) {
+
+    const texto =
+        normalizarTexto(tipo);
+
+
+    if (
+        texto.includes("validade") ||
+        texto.includes("vencido")
+    ) {
+
+        return "validade";
+
     }
 
-    const botoesFiltro = document.querySelectorAll('.filtros-alerta .filtro-btn');
-    botoesFiltro.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const filtro = e.target.getAttribute('data-filtro');
-            filtrarAlertas(filtro);
-        });
-    });
-}
 
-export function salvarConfiguracoesAlertas(event) {
-    // IMPORTANTE: O event.preventDefault() FOI REMOVIDO daqui.
-    // Isso permite que o formulário recarregue a página e envie os dados via POST para o PHP salvar no MySQL.
+    if (
+        texto.includes("estoque")
+    ) {
 
-    // Captura os dados baseados nas novas IDs ajustadas do HTML (Central + Prateleira)
-    const diasValidadeVal = parseInt(document.getElementById('dias-alerta-validade').value) || 30;
-    const caixasCentralVal = parseInt(document.getElementById('caixas-alerta-central').value) || 10;
-    const caixasPrateleiraVal = parseInt(document.getElementById('caixas-alerta-prateleira').value) || 5;
-    const intervaloMinutosVal = parseInt(document.getElementById('intervalo-alerta').value) || 15;
+        return "estoque";
 
-    // ATUALIZAÇÃO DO ESTADO INTERNO DO JAVASCRIPT / LOCALSTORAGE
-    const novasConfigs = {
-        diasAntesValidade: diasValidadeVal,
-        caixasMinimasCentral: caixasCentralVal,
-        caixasMinimasPrateleira: caixasPrateleiraVal,
-        caixasMinimas: caixasCentralVal, // Mantém compatibilidade legada se houver
-        intervaloMinutos: intervaloMinutosVal
-    };
-
-    setConfiguracoesAlertas(novasConfigs);
-    localStorage.setItem('configuracoesAlertas', JSON.stringify(novasConfigs));
-
-    // Limpa o histórico antigo para recalcular sob as novas regras após o recarregamento
-    localStorage.removeItem('historicoAlertas');
-}
-
-export function preencherFormularioAlertas() {
-    const dias = document.getElementById('dias-alerta-validade');
-    const caixasCentral = document.getElementById('caixas-alerta-central');
-    const caixasPrateleira = document.getElementById('caixas-alerta-prateleira');
-    const intervalo = document.getElementById('intervalo-alerta');
-
-    if (dias) dias.value = configuracoesAlertas.diasAntesValidade || 30;
-    if (caixasCentral) caixasCentral.value = configuracoesAlertas.caixasMinimasCentral || configuracoesAlertas.caixasMinimas || 10;
-    if (caixasPrateleira) caixasPrateleira.value = configuracoesAlertas.caixasMinimasPrateleira || 5;
-    if (intervalo) intervalo.value = String(configuracoesAlertas.intervaloMinutos || 15);
-}
-
-export function iniciarMonitoramentoAlertas() {
-    if (intervaloMonitoramentoAlertas) {
-        clearInterval(intervaloMonitoramentoAlertas);
     }
 
-    const intervaloMs = (configuracoesAlertas.intervaloMinutos || 15) * 60 * 1000;
-    intervaloMonitoramentoAlertas = setInterval(() => processarAlertas(), intervaloMs);
+
+    return "todos";
+
 }
 
-export function processarAlertas(forcarRegistro = false) {
-    const alertasEncontrados = [];
-    const agora = new Date().toISOString();
 
-    // Definição segura dos parâmetros para o processamento de regras locais
-    const diasLimite = configuracoesAlertas.diasAntesValidade || 30;
-    const estoqueMinimoCentral = configuracoesAlertas.caixasMinimasCentral || configuracoesAlertas.caixasMinimas || 10;
+/* =========================================================
+   ÍCONE DO SWEETALERT2
+========================================================= */
 
-    produtosEstoque.forEach(prod => {
-        const dataValidade = converterDataBrParaDate(prod.validade);
-        const diasRestantes = dataValidade ? diferencaEmDias(dataValidade) : null;
+function iconeAlerta(tipo) {
 
-        if (diasRestantes !== null && diasRestantes <= diasLimite) {
-            const status = diasRestantes <= 0 ? 'critico' : 'aviso';
-            const mensagem = diasRestantes <= 0
-                ? `O produto ${prod.nome} do lote ${prod.lote} está com a validade vencida e precisa de ação imediata.`
-                : `O produto ${prod.nome} do lote ${prod.lote} vence em ${diasRestantes} dia(s).`;
+    if (ehCritico(tipo)) {
 
-            alertasEncontrados.push({
-                chave: `validade-${prod.lote}-${status}`,
-                tipo: 'validade',
-                status,
-                produto: prod.nome,
-                lote: prod.lote,
-                referencia: diasRestantes <= 0 ? 'Validade vencida' : `${diasRestantes} dia(s) restantes`,
-                mensagem,
-                dataHora: agora
-            });
-        }
+        return "error";
 
-        if ((prod.caixas || 0) <= estoqueMinimoCentral) {
-            const status = (prod.caixas || 0) <= Math.max(1, Math.ceil(estoqueMinimoCentral / 2)) ? 'critico' : 'aviso';
-            const mensagem = `O produto ${prod.nome} está com apenas ${prod.caixas || 0} caixa(s) no estoque central.`;
-
-            alertasEncontrados.push({
-                chave: `estoque-${prod.lote}-${status}`,
-                tipo: 'estoque',
-                status,
-                produto: prod.nome,
-                lote: prod.lote,
-                referencia: `${prod.caixas || 0} caixa(s) disponíveis`,
-                mensagem,
-                dataHora: agora
-            });
-        }
-    });
-
-    if (forcarRegistro || alertasEncontrados.length) {
-        alertasEncontrados.forEach(registrarAlerta);
-        salvarHistoricoAlertas();
     }
 
-    atualizarResumoAlertas();
-    renderizarAlertasCompletos();
+
+    if (
+        categoriaAlerta(tipo) === "validade"
+    ) {
+
+        return "warning";
+
+    }
+
+
+    return "warning";
+
 }
 
-function registrarAlerta(alerta) {
-    const jaExiste = historicoAlertas.some(item => item.chave === alerta.chave && item.status === alerta.status);
-    if (jaExiste) return;
-    historicoAlertas.unshift(alerta);
-}
 
-function salvarHistoricoAlertas() {
-    historicoAlertas.sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
-    localStorage.setItem('historicoAlertas', JSON.stringify(historicoAlertas));
-}
+/* =========================================================
+   COLOCAR ALERTAS NA FILA
+========================================================= */
 
-export function filtrarAlertas(filtro) {
-    filtroAtualAlertas = filtro;
-    document.querySelectorAll('.filtro-btn').forEach(btn => {
-        btn.classList.toggle('ativo', btn.dataset.filtro === filtro);
-    });
-    renderizarAlertasCompletos();
-}
+function adicionarNaFila(alertas) {
 
-function obterAlertasFiltrados() {
-    if (filtroAtualAlertas === 'todos') return historicoAlertas;
-    if (filtroAtualAlertas === 'critico') return historicoAlertas.filter(item => item.status === 'critico');
-    return historicoAlertas.filter(item => item.tipo === filtroAtualAlertas);
-}
-
-export function atualizarResumoAlertas() {
-    const total = historicoAlertas.length;
-    const criticos = historicoAlertas.filter(item => item.status === 'critico').length;
-    const avisos = historicoAlertas.filter(item => item.status === 'aviso').length;
-
-    const totalEl = document.getElementById('resumo-total-alertas');
-    const criticosEl = document.getElementById('resumo-alertas-criticos');
-    const avisosEl = document.getElementById('resumo-alertas-aviso');
-
-    if (totalEl) totalEl.innerText = total;
-    if (criticosEl) criticosEl.innerText = criticos;
-    if (avisosEl) avisosEl.innerText = avisos;
-}
-
-export function renderizarAlertasCompletos() {
-    const container = document.getElementById('lista-alertas-completa');
-    if (!container) return;
-
-    const alertas = obterAlertasFiltrados();
-    if (!alertas.length) {
-        container.innerHTML = '<div class="vazio-alertas">Nenhum alerta emitido até o momento.</div>';
+    if (!Array.isArray(alertas)) {
         return;
     }
 
-    container.innerHTML = alertas.map(alerta => {
-        const classeTag = alerta.status === 'critico' ? 'tag-critico' : alerta.status === 'aviso' ? 'tag-aviso' : 'tag-info';
-        const textoTag = alerta.status === 'critico' ? 'Crítico' : alerta.status === 'aviso' ? 'Aviso' : 'Informativo';
-        const corBorda = alerta.status === 'critico' ? '#e74c3c' : alerta.tipo === 'estoque' ? '#f39c12' : '#3498db';
-        const tipoLabel = alerta.tipo === 'estoque' ? 'Estoque' : 'Validade';
 
-        return `
-            <div class="alerta-item" style="border-left-color: ${corBorda}">
-                <div class="alerta-meta">
-                    <span class="tag-alerta ${classeTag}">${textoTag}</span>
-                    <span><strong>Tipo:</strong> ${tipoLabel}</span>
-                    <span><strong>Produto:</strong> ${alerta.produto}</span>
-                    <span><strong>Lote:</strong> ${alerta.lote}</span>
-                    <span><strong>Emitido em:</strong> ${formatarDataHora(alerta.dataHora)}</span>
-                </div>
-                <h3>${alerta.referencia}</h3>
-                <div class="alerta-mensagem">${alerta.mensagem}</div>
-            </div>
-        `;
-    }).join('');
+    if (alertas.length === 0) {
+        return;
+    }
+
+
+    filaAlertas.push(
+        ...alertas
+    );
+
+
+    processarFilaAlertas();
+
 }
 
-// Helpers Utilitários de Data
-function formatarDataHora(dataISO) {
-    return new Date(dataISO).toLocaleString('pt-BR');
+
+/* =========================================================
+   EXIBIR FILA DE ALERTAS
+========================================================= */
+
+async function processarFilaAlertas() {
+
+    if (exibindoAlerta) {
+        return;
+    }
+
+
+    if (filaAlertas.length === 0) {
+        return;
+    }
+
+
+    exibindoAlerta = true;
+
+
+    const alerta =
+        filaAlertas.shift();
+
+
+    await Toast.fire({
+
+        icon:
+            alerta.nivel === "critico"
+                ? "error"
+                : iconeAlerta(
+                    alerta.tipo_alerta
+                ),
+
+        titleText:
+            alerta.tipo_alerta,
+
+        text:
+            alerta.mensagem
+
+    });
+
+
+    exibindoAlerta = false;
+
+
+    processarFilaAlertas();
+
 }
 
-function converterDataBrParaDate(dataBr) {
-    if (!dataBr) return null;
-    const partes = dataBr.split('/');
-    if (partes.length !== 3) return null;
-    return new Date(partes[2], partes[1] - 1, partes[0]);
+
+/* =========================================================
+   VERIFICAR ALERTAS NO SERVIDOR
+========================================================= */
+
+async function verificarAlertas(
+    mostrarPopups = true
+) {
+
+    try {
+
+        const resposta =
+            await fetch(
+                "../php/verificar_alertas.php",
+                {
+                    method: "GET",
+
+                    cache: "no-store",
+
+                    headers: {
+                        "Accept":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        const textoResposta =
+            await resposta.text();
+
+
+        let dados;
+
+
+        try {
+
+            dados =
+                JSON.parse(
+                    textoResposta
+                );
+
+        } catch (erroJSON) {
+
+            console.error(
+                "Resposta recebida do servidor:",
+                textoResposta
+            );
+
+            throw new Error(
+                "O servidor não retornou JSON válido."
+            );
+        }
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                dados.erro ||
+                "Falha ao executar o servidor."
+            );
+        }
+
+
+        if (!dados.sucesso) {
+
+            throw new Error(
+                dados.erro ||
+                "Não foi possível verificar os alertas."
+            );
+        }
+
+
+        /* ===============================================
+           POPUPS
+        =============================================== */
+
+        if (
+            mostrarPopups &&
+            Number(dados.exibir_popups) === 1
+        ) {
+
+            adicionarNaFila(
+                dados.novos
+            );
+
+        }
+
+
+        /* ===============================================
+           HISTÓRICO
+        =============================================== */
+
+        renderizarHistorico(
+            dados.historico || []
+        );
+
+
+        /* ===============================================
+           RESUMO
+        =============================================== */
+
+        atualizarResumo(
+            dados.resumo || {}
+        );
+
+
+        /* ===============================================
+           MONITORAMENTO
+        =============================================== */
+
+        configurarMonitoramento(
+            dados.intervalo_minutos
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Falha ao se comunicar com o servidor:",
+            erro
+        );
+
+    }
+
 }
 
-function diferencaEmDias(dataAlvo) {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    dataAlvo.setHours(0, 0, 0, 0);
-    const diferencaMs = dataAlvo.getTime() - hoje.getTime();
-    return Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
+
+/* =========================================================
+   CONFIGURAR INTERVALO AUTOMÁTICO
+========================================================= */
+
+function configurarMonitoramento(
+    minutos
+) {
+
+    const valor =
+        Number(minutos);
+
+
+    if (
+        !Number.isFinite(valor) ||
+        valor < 1
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        intervaloAtual === valor &&
+        intervaloMonitoramento !== null
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        intervaloMonitoramento !== null
+    ) {
+
+        clearInterval(
+            intervaloMonitoramento
+        );
+
+    }
+
+
+    intervaloAtual = valor;
+
+
+    intervaloMonitoramento =
+        setInterval(
+            () => {
+                verificarAlertas(true);
+            },
+            valor * 60 * 1000
+        );
+
 }
+
+
+/* =========================================================
+   RENDERIZAR HISTÓRICO
+========================================================= */
+
+function renderizarHistorico(
+    historico
+) {
+
+    const lista =
+        document.getElementById(
+            "lista-alertas-completa"
+        );
+
+
+    if (!lista) {
+        return;
+    }
+
+
+    lista.innerHTML = "";
+
+
+    if (
+        !Array.isArray(historico) ||
+        historico.length === 0
+    ) {
+
+        const vazio =
+            document.createElement(
+                "div"
+            );
+
+
+        vazio.className =
+            "alerta-vazio";
+
+
+        vazio.textContent =
+            "Nenhum alerta foi emitido ainda.";
+
+
+        lista.appendChild(
+            vazio
+        );
+
+
+        return;
+    }
+
+
+    historico.forEach(
+        (alerta) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            const critico =
+                ehCritico(
+                    alerta.tipo_alerta
+                );
+
+
+            item.className =
+                critico
+                    ? "alerta-item critico"
+                    : "alerta-item aviso";
+
+
+            item.dataset.categoria =
+                categoriaAlerta(
+                    alerta.tipo_alerta
+                );
+
+
+            item.dataset.nivel =
+                critico
+                    ? "critico"
+                    : "aviso";
+
+
+            /* =========================================
+               TÍTULO
+            ========================================= */
+
+            const titulo =
+                document.createElement(
+                    "strong"
+                );
+
+
+            titulo.className =
+                "alerta-item-titulo";
+
+
+            titulo.textContent =
+                alerta.tipo_alerta;
+
+
+            /* =========================================
+               MENSAGEM
+            ========================================= */
+
+            const mensagem =
+                document.createElement(
+                    "p"
+                );
+
+
+            mensagem.textContent =
+                alerta.mensagem;
+
+
+            /* =========================================
+               DATA
+            ========================================= */
+
+            const data =
+                document.createElement(
+                    "small"
+                );
+
+
+            data.textContent =
+                alerta.data_alerta;
+
+
+            item.appendChild(
+                titulo
+            );
+
+
+            item.appendChild(
+                mensagem
+            );
+
+
+            item.appendChild(
+                data
+            );
+
+
+            lista.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    aplicarFiltro();
+
+}
+
+
+/* =========================================================
+   ATUALIZAR RESUMO
+========================================================= */
+
+function atualizarResumo(
+    resumo
+) {
+
+    const total =
+        Number(resumo.total || 0);
+
+    const criticos =
+        Number(resumo.criticos || 0);
+
+    const avisos =
+        Number(resumo.avisos || 0);
+
+
+    const elementoTotal =
+        document.getElementById(
+            "resumo-total-alertas"
+        );
+
+
+    const elementoCriticos =
+        document.getElementById(
+            "resumo-alertas-criticos"
+        );
+
+
+    const elementoAvisos =
+        document.getElementById(
+            "resumo-alertas-aviso"
+        );
+
+
+    if (elementoTotal) {
+
+        elementoTotal.textContent =
+            total;
+
+    }
+
+
+    if (elementoCriticos) {
+
+        elementoCriticos.textContent =
+            criticos;
+
+    }
+
+
+    if (elementoAvisos) {
+
+        elementoAvisos.textContent =
+            avisos;
+
+    }
+
+}
+
+
+/* =========================================================
+   FILTRAR ALERTAS
+========================================================= */
+
+function filtrarAlertas(
+    filtro
+) {
+
+    filtroAtual =
+        filtro;
+
+
+    document
+        .querySelectorAll(
+            ".filtro-btn"
+        )
+        .forEach(
+            (botao) => {
+
+                botao.classList.toggle(
+                    "ativo",
+                    botao.dataset.filtro === filtro
+                );
+
+            }
+        );
+
+
+    aplicarFiltro();
+
+}
+
+
+/* =========================================================
+   APLICAR FILTRO
+========================================================= */
+
+function aplicarFiltro() {
+
+    const itens =
+        document.querySelectorAll(
+            ".alerta-item"
+        );
+
+
+    itens.forEach(
+        (item) => {
+
+            if (
+                filtroAtual === "todos"
+            ) {
+
+                item.style.display =
+                    "";
+
+                return;
+
+            }
+
+
+            if (
+                filtroAtual === "critico"
+            ) {
+
+                item.style.display =
+                    item.dataset.nivel === "critico"
+                        ? ""
+                        : "none";
+
+                return;
+
+            }
+
+
+            item.style.display =
+                item.dataset.categoria === filtroAtual
+                    ? ""
+                    : "none";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DISPONIBILIZAR FILTRO PARA onclick DO HTML
+========================================================= */
+
+window.filtrarAlertas =
+    filtrarAlertas;
+
+
+/* =========================================================
+   LIMPAR HISTÓRICO
+========================================================= */
+
+async function confirmarLimpezaAlertas() {
+
+    const resultado =
+        await Swal.fire({
+
+            title:
+                "Limpar histórico?",
+
+            text:
+                "Todos os alertas registrados serão excluídos.",
+
+            icon:
+                "warning",
+
+            showCancelButton:
+                true,
+
+            confirmButtonText:
+                "Sim, limpar",
+
+            cancelButtonText:
+                "Cancelar",
+
+            reverseButtons:
+                true
+
+        });
+
+
+    if (!resultado.isConfirmed) {
+        return;
+    }
+
+
+    try {
+
+        const dadosFormulario =
+            new URLSearchParams();
+
+
+        dadosFormulario.append(
+            "action",
+            "limpar_historico"
+        );
+
+
+        const resposta =
+            await fetch(
+                "../php/verificar_alertas.php",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body:
+                        dadosFormulario.toString()
+                }
+            );
+
+
+        const dados =
+            await resposta.json();
+
+
+        if (
+            !resposta.ok ||
+            !dados.sucesso
+        ) {
+
+            throw new Error(
+                dados.erro ||
+                "Não foi possível limpar o histórico."
+            );
+
+        }
+
+
+        /* ===============================================
+           LIMPAR TELA
+        =============================================== */
+
+        const lista =
+            document.getElementById(
+                "lista-alertas-completa"
+            );
+
+
+        if (lista) {
+
+            lista.innerHTML = "";
+
+
+            const vazio =
+                document.createElement(
+                    "div"
+                );
+
+
+            vazio.className =
+                "alerta-vazio";
+
+
+            vazio.textContent =
+                "Nenhum alerta foi emitido ainda.";
+
+
+            lista.appendChild(
+                vazio
+            );
+
+        }
+
+
+        atualizarResumo({
+            total: 0,
+            criticos: 0,
+            avisos: 0
+        });
+
+
+        await Swal.fire({
+
+            icon:
+                "success",
+
+            title:
+                "Histórico limpo!",
+
+            text:
+                "Os alertas anteriores foram removidos.",
+
+            timer:
+                2000,
+
+            showConfirmButton:
+                false
+
+        });
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        Swal.fire({
+
+            icon:
+                "error",
+
+            title:
+                "Erro",
+
+            text:
+                erro.message ||
+                "Não foi possível limpar o histórico."
+
+        });
+
+    }
+
+}
+
+
+window.confirmarLimpezaAlertas =
+    confirmarLimpezaAlertas;
+
+
+/* =========================================================
+   FEEDBACK DO SALVAMENTO DAS CONFIGURAÇÕES
+========================================================= */
+
+function verificarFeedback() {
+
+    const parametros =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    if (
+        parametros.has("sucesso")
+    ) {
+
+        Toast.fire({
+
+            icon:
+                "success",
+
+            title:
+                "Configurações salvas!",
+
+            text:
+                "As condições dos alertas foram atualizadas."
+
+        });
+
+
+        limparURL();
+
+    }
+
+
+    if (
+        parametros.has("erro")
+    ) {
+
+        let mensagem =
+            "Verifique os dados das configurações.";
+
+
+        const erro =
+            parametros.get("erro");
+
+
+        if (
+            erro === "preenchimento"
+        ) {
+
+            mensagem =
+                "Preencha todos os campos.";
+
+        }
+
+
+        else if (
+            erro === "valores_invalidos"
+        ) {
+
+            mensagem =
+                "Os valores informados são inválidos.";
+
+        }
+
+
+        else if (
+            erro === "banco"
+        ) {
+
+            mensagem =
+                "Não foi possível salvar as configurações no banco.";
+
+        }
+
+
+        Toast.fire({
+
+            icon:
+                "error",
+
+            title:
+                "Erro ao salvar",
+
+            text:
+                mensagem
+
+        });
+
+
+        limparURL();
+
+    }
+
+}
+
+
+/* =========================================================
+   LIMPAR PARÂMETROS DA URL
+========================================================= */
+
+function limparURL() {
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.search = "";
+
+
+    window.history.replaceState(
+        {},
+        document.title,
+        url.toString()
+    );
+
+}
+
+
+/* =========================================================
+   INICIALIZAÇÃO DA PÁGINA
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        verificarFeedback();
+
+        /*
+         * Faz a primeira verificação imediatamente.
+         */
+        verificarAlertas(true);
+
+    }
+);

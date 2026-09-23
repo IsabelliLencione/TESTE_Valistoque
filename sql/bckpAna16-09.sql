@@ -10,20 +10,20 @@ USE `valistoque_testes`;
 -- --------------------------------------------------------
 -- Tabela: alertas
 -- --------------------------------------------------------
-
-DROP TABLE IF EXISTS `alertas`;
-
-CREATE TABLE `alertas` (
-  `id_alerta` int NOT NULL AUTO_INCREMENT,
-  `id_estoque` int NOT NULL,
-  `tipo_alerta` varchar(50) NOT NULL,
-  `mensagem` varchar(255) NOT NULL,
-  `data_alerta` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_alerta`),
-  KEY `id_estoque` (`id_estoque`),
-  CONSTRAINT `alertas_ibfk_1`
-    FOREIGN KEY (`id_estoque`) REFERENCES `estoque` (`id_estoque`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `alertas` (
+    `id_alerta` INT NOT NULL AUTO_INCREMENT,
+    `id_estoque` INT NOT NULL,
+    `tipo_alerta` VARCHAR(50) NOT NULL,
+    `mensagem` VARCHAR(255) NOT NULL,
+    `data_alerta` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id_alerta`),
+    KEY `id_estoque` (`id_estoque`),
+    CONSTRAINT `alertas_ibfk_1`
+        FOREIGN KEY (`id_estoque`)
+        REFERENCES `estoque` (`id_estoque`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 -- Tabela: estoque
@@ -105,3 +105,41 @@ VALUES
 (14, 'ana', 'ana@email.com', '12345647', '1234', 'funcionario', '2026-09-09 17:14:05'),
 (15, 'Administrador', 'admin@valistoque.com', '111.111.111-11', 'admin123', 'administrador', CURRENT_TIMESTAMP),
 (16, 'Funcionario', 'funcionario@valistoque.com', '222.222.222-22', 'func123', 'funcionario', CURRENT_TIMESTAMP);
+
+
+
+
+--------------------------------------------------------------
+--tabelas Configurar Alertas
+CREATE TABLE IF NOT EXISTS `config_alertas` (
+    `id` INT NOT NULL DEFAULT 1,
+    `dias_antes_validade` INT NOT NULL DEFAULT 30,
+    `unidades_minimas_central` INT NOT NULL DEFAULT 10,
+    `unidades_minimas_prateleira` INT NOT NULL DEFAULT 5,
+    `intervalo_minutos` INT NOT NULL DEFAULT 15,
+    `exibir_popups` TINYINT(1) NOT NULL DEFAULT 1,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `config_alertas`
+(
+    `id`,
+    `dias_antes_validade`,
+    `unidades_minimas_central`,
+    `unidades_minimas_prateleira`,
+    `intervalo_minutos`,
+    `exibir_popups`
+)
+VALUES
+(
+    1,
+    30,
+    10,
+    5,
+    5,
+    1
+)
+ON DUPLICATE KEY UPDATE
+    `id` = `id`;
