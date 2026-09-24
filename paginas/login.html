@@ -9,9 +9,13 @@
 
     <title>Login - Valistoque</title>
 
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link
+        href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+        rel="stylesheet"
+    />
 
     <style>
+
         @import url("https://fonts.googleapis.com/css2?family=Rationale&display=swap");
 
         * {
@@ -26,9 +30,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(to bottom,
-                    #ffffff 70%,
-                    #4682b4 100%);
+            background: linear-gradient(
+                to bottom,
+                #ffffff 70%,
+                #4682b4 100%
+            );
             background-attachment: fixed;
         }
 
@@ -166,6 +172,7 @@
         .link-acao:hover {
             text-decoration: underline;
         }
+
     </style>
 
 </head>
@@ -174,7 +181,11 @@
 
     <div>
 
-        <img src="logo.PNG" alt="Logo do Sistema" class="logo" />
+        <img
+            src="logo.PNG"
+            alt="Logo do Sistema"
+            class="logo"
+        />
 
         <h1 class="nome">
             Valis<span class="cor-diferente">to</span>que
@@ -189,17 +200,22 @@
             <h1>Login</h1>
 
             <p style="
-                    text-align: center;
-                    color: #4d6670;
-                    margin-top: -8px;
-                    margin-bottom: 10px;
-                ">
-                Escolha o perfil e entre no protótipo.
+                text-align: center;
+                color: #4d6670;
+                margin-top: -8px;
+                margin-bottom: 10px;
+            ">
+                Acesso do administrador.
             </p>
 
             <div class="login-box">
 
-                <input type="email" id="email" placeholder="Email" required />
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    required
+                />
 
                 <i class="bx bxs-user"></i>
 
@@ -207,7 +223,12 @@
 
             <div class="login-box">
 
-                <input type="password" id="senha" placeholder="Senha" required />
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Senha"
+                    required
+                />
 
                 <i class="bx bxs-lock-alt"></i>
 
@@ -221,10 +242,6 @@
                         Administrador
                     </option>
 
-                    <option value="funcionario">
-                        Funcionário
-                    </option>
-
                 </select>
 
                 <i class="bx bxs-briefcase"></i>
@@ -233,22 +250,32 @@
 
             <div class="links-acao">
 
-                <a href="recuperaçãodesenha.html" class="link-acao">
+                <a
+                    href="recuperaçãodesenha.html"
+                    class="link-acao"
+                >
                     Esqueci minha senha
                 </a>
 
-                <a href="Principal.html" class="link-acao">
+                <a
+                    href="Principal.html"
+                    class="link-acao"
+                >
                     Voltar ao início
                 </a>
 
             </div>
 
-            <button type="submit" class="botao">
+            <button
+                type="submit"
+                class="botao"
+            >
                 Entrar
             </button>
 
             <p class="baixo">
-                &copy; 2026 Valistoque. Todos os direitos reservados.
+                &copy; 2026 Valistoque.
+                Todos os direitos reservados.
             </p>
 
         </form>
@@ -279,11 +306,6 @@
                         .value
                         .trim();
 
-                const perfil =
-                    document
-                        .getElementById("perfil")
-                        .value;
-
                 if (!email || !senha) {
 
                     alert("Preencha email e senha.");
@@ -295,7 +317,6 @@
 
                 dados.append("email", email);
                 dados.append("senha", senha);
-                dados.append("perfil", perfil);
 
                 try {
 

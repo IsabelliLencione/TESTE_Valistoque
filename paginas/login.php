@@ -16,13 +16,18 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 $email = $_POST["email"] ?? "";
 $senha = $_POST["senha"] ?? "";
-$perfil = $_POST["perfil"] ?? "";
+
+/*
+ * O sistema terá somente o perfil Administrador.
+ * O perfil não vem mais do formulário para evitar
+ * que alguém tente enviar outro tipo de usuário.
+ */
+$perfil = "administrador";
 
 $email = trim(strtolower($email));
 $senha = trim($senha);
-$perfil = trim($perfil);
 
-if ($email === "" || $senha === "" || $perfil === "") {
+if ($email === "" || $senha === "") {
 
     echo json_encode([
         "sucesso" => false,
