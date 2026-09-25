@@ -1,13 +1,6 @@
 <?php
 require_once __DIR__ . "/../php/config.php";
 
-// Garante que a coluna 'ativo' exista na tabela 'estoque'
-try {
-    $pdo->exec("ALTER TABLE estoque ADD COLUMN ativo TINYINT(1) DEFAULT 1");
-} catch (PDOException $e) {
-    
-}
-
 // Verifica se o usuário quer ver os inativos
 $verInativos = isset($_GET['ver_inativos']) && $_GET['ver_inativos'] == '1' ? 1 : 0;
 
@@ -16,6 +9,11 @@ try {
     $stmt->bindValue(':status', $verInativos ? 0 : 1, PDO::PARAM_INT);
     $stmt->execute();
     $estoque = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // A movimentação utiliza somente prateleiras que já existem no banco.
+    // A associação do lote com a prateleira acontece durante a transferência.
+    $stmtPrateleiras = $pdo->query("SELECT p.id_prat, p.id_estoque, p.qte, e.lote, e.nome_produto FROM prateleiras p LEFT JOIN estoque e ON e.id_estoque = p.id_estoque ORDER BY p.id_prat");
+    $prateleiras = $stmtPrateleiras->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Erro ao buscar estoque: " . $e->getMessage());
 }
@@ -111,7 +109,7 @@ try {
         </div> 
     </div> 
 
-    <!-- Modal para Mover Caixas -->
+    <!-- Modal para mover unidades do estoque para uma prateleira -->
     <dialog id="modalMoverPrateleira" style="border:none; border-radius:12px; padding:24px; width:400px; max-width:90vw; margin:auto; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 id="modalTituloProduto" style="margin:0; font-size:18px; color:#1a252f;">Mover para Prateleira</h3>
@@ -121,11 +119,26 @@ try {
         <form action="mover_para_prateleira.php" method="POST">
             <input type="hidden" id="mover_id_estoque" name="id_estoque">
             
-            <label for="numero_prat" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Número da Prateleira:</label>
-            <input type="number" id="numero_prat" name="numero_prat" min="1" required placeholder="Ex: 1" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
+            <label for="id_prat" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Prateleira:</label>
+            <select id="id_prat" name="id_prat" required style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
+                <option value="">Selecione uma prateleira</option>
+                <?php foreach ($prateleiras as $prat): ?>
+                    <option value="<?= (int)$prat['id_prat'] ?>">
+                        <?php if ($prat['id_estoque'] !== null): ?>
+                            <?php
+                                $nomePrat = trim((string)($prat['nome_produto'] ?? ''));
+                                $nomePratExibicao = mb_strlen($nomePrat) > 32 ? mb_substr($nomePrat, 0, 32) . '...' : $nomePrat;
+                            ?>
+                            Prateleira <?= (int)$prat['id_prat'] ?> - Lote <?= htmlspecialchars($prat['lote']) ?> - <?= htmlspecialchars($nomePratExibicao) ?>
+                        <?php else: ?>
+                            Prateleira <?= (int)$prat['id_prat'] ?> - Vazia
+                        <?php endif; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-            <label for="caixas_mover" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Quantidade a Mover:</label>
-            <input type="number" id="caixas_mover" name="caixas_mover" min="1" required placeholder="Ex: 5" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:8px;">
+            <label for="quantidade_mover" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Quantidade de unidades a mover:</label>
+            <input type="number" id="quantidade_mover" name="quantidade_mover" min="1" required placeholder="Ex: 5" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:8px;">
 
             <button type="submit" style="width:100%; background:#2ecc71; color:#fff; border:none; padding:12px; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer;">Confirmar Transferência</button>
         </form>
@@ -137,7 +150,7 @@ function abrirModalMover(id, nome, maxQtd) {
     document.getElementById('mover_id_estoque').value = id;
     document.getElementById('modalTituloProduto').innerText = 'Mover ' + nome;
     
-    const inputQtd = document.getElementById('caixas_mover');
+    const inputQtd = document.getElementById('quantidade_mover');
     inputQtd.max = maxQtd;
     inputQtd.value = '';
     

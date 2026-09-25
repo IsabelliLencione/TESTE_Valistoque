@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                    value="<?= htmlspecialchars($produtoParaEditar['total_itens'] ?? '') ?>" required>
         </div>
         <div>
-            <label for="peso">Peso do Produto (kg):</label>
+            <label for="peso">Peso do Produto (gramas):</label>
             <input type="number" id="peso" name="peso" step="0.01" 
                    value="<?= htmlspecialchars($produtoParaEditar['peso_un'] ?? '') ?>" required>
         </div>
