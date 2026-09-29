@@ -17,13 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $email = $_POST["email"] ?? "";
 $senha = $_POST["senha"] ?? "";
 
-/*
- * O sistema terá somente o perfil Administrador.
- * O perfil não vem mais do formulário para evitar
- * que alguém tente enviar outro tipo de usuário.
- */
-$perfil = "administrador";
-
 $email = trim(strtolower($email));
 $senha = trim($senha);
 
@@ -39,31 +32,30 @@ if ($email === "" || $senha === "") {
 
 try {
 
+    // Busca o usuário apenas pelo e-mail
     $sql = "SELECT id, nome, email, cpf, senha, tipo
             FROM usuarios
             WHERE email = :email
-            AND tipo = :tipo
             LIMIT 1";
 
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
-        ":email" => $email,
-        ":tipo" => $perfil
+        ":email" => $email
     ]);
 
     $usuario = $stmt->fetch();
 
     if (!$usuario) {
-
         echo json_encode([
             "sucesso" => false,
-            "mensagem" => "E-mail ou perfil incorreto."
+            "mensagem" => "E-mail não cadastrado."
         ]);
 
         exit;
     }
 
+    // Validação da Senha
     if ($senha !== $usuario["senha"]) {
 
         echo json_encode([
@@ -74,6 +66,7 @@ try {
         exit;
     }
 
+    // Sucesso: Aceita qualquer tipo válido ('administrador' ou 'funcionario')
     echo json_encode([
         "sucesso" => true,
         "mensagem" => "Login realizado com sucesso.",
