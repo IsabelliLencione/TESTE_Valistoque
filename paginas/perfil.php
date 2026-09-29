@@ -1,6 +1,17 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . "/../php/config.php";
 
+// Recupera os dados da sessão ou define valores padrão caso não esteja logado
+$nomeUsuario  = $_SESSION["usuario_nome"] ?? "Usuário";
+$emailUsuario = $_SESSION["usuario_email"] ?? "email@valistoque.com";
+$tipoUsuario  = $_SESSION["usuario_tipo"] ?? "funcionario";
+
+// Formata o título e o badge visual dinamicamente
+$tituloPerfil = (strtolower($tipoUsuario) === 'administrador') ? 'Perfil do Administrador' : 'Perfil do Funcionário';
+$badgePerfil  = (strtolower($tipoUsuario) === 'administrador') ? 'Administrador' : 'Funcionário';
 ?>
 
 
@@ -36,7 +47,7 @@ require_once __DIR__ . "/../php/config.php";
 <div id="secao-perfil">
     <div class="container">
 
-        <!-- Topo: Foto e Título -->
+        <!-- Topo: Foto e Título Dinâmico -->
       <div class="profile-header">
         <div class="avatar-wrapper" id="avatar-wrapper">
             <img id="profile-img" src="https://via.placeholder.com/150" alt="Foto de Perfil">
@@ -46,27 +57,27 @@ require_once __DIR__ . "/../php/config.php";
         </div>
         <input type="file" id="file-input" accept="image/*" style="display: none;">
 
-        <h2 id="titulo-perfil-admin">Perfil do Administrador</h2>
+        <h2 id="titulo-perfil-admin"><?= htmlspecialchars($tituloPerfil) ?></h2>
     </div>
 
         <form id="profile-form" onsubmit="saveProfile(event)">
-            <!-- Campo Nome -->
+            <!-- Campo Nome Dinâmico -->
             <div class="info-group">
                 <label class="label" for="user-name">Nome do usuário:</label>
-                <input type="text" id="user-name" class="input-field" value="Administrador" readonly required>
+                <input type="text" id="user-name" class="input-field" value="<?= htmlspecialchars($nomeUsuario) ?>" readonly required>
             </div>
 
-            <!-- Campo E-mail -->
+            <!-- Campo E-mail Dinâmico -->
             <div class="info-group">
                 <label class="label" for="user-email">Email do usuário:</label>
-                <input type="email" id="user-email" class="input-field" value="admin@valistoque.com" readonly required>
+                <input type="email" id="user-email" class="input-field" value="<?= htmlspecialchars($emailUsuario) ?>" readonly required>
             </div>
 
-            <!-- Campo Tipo de Conta -->
+            <!-- Campo Tipo de Conta Dinâmico -->
             <div class="info-group">
                 <span class="label">Tipo de conta:</span>
                 <div class="input-field disabled-field">
-                    <span class="badge" id="badge-perfil">Administrador</span>
+                    <span class="badge" id="badge-perfil"><?= htmlspecialchars($badgePerfil) ?></span>
                 </div>
             </div>
 
@@ -81,8 +92,6 @@ require_once __DIR__ . "/../php/config.php";
     </div>
 </div>
 <script type="module" src="../js/perfil.js"></script>
-    
-</script>
 </main>
 </body>
 </html>
