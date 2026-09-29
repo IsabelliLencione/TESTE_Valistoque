@@ -152,7 +152,7 @@
                     <div class="prat-detalhes">
                         <h4><?= htmlspecialchars($prat['nome_produto']) ?></h4>
                         <p><strong>Lote:</strong> <?= htmlspecialchars($prat['lote'] ?? 'N/A') ?></p>
-                        <p><strong>Quantidade:</strong> <?= htmlspecialchars($prat['quantidade_atual']) ?> caixas</p>
+                        <p><strong>Quantidade:</strong> <?= htmlspecialchars($prat['quantidade_atual']) ?> unidades</p>
                         <p><strong>Peso Total:</strong> <?= number_format((float)$prat['peso_prat'], 2, ',', '.') ?> kg</p>
                     </div>
 
