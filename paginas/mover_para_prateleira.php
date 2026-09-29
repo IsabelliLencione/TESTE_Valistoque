@@ -8,12 +8,15 @@ require_once __DIR__ . '/../php/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_estoque = filter_input(INPUT_POST, 'id_estoque', FILTER_VALIDATE_INT);
-    $numero_prat = filter_input(INPUT_POST, 'numero_prat', FILTER_VALIDATE_INT);
     $caixas_mover = filter_input(INPUT_POST, 'caixas_mover', FILTER_VALIDATE_INT);
 
-    if (!$id_estoque || !$numero_prat || !$caixas_mover || $caixas_mover <= 0) {
+    // Agora validamos apenas o ID do estoque e a quantidade
+    if (!$id_estoque || !$caixas_mover || $caixas_mover <= 0) {
         die("Dados do formulário inválidos.");
     }
+
+    // REGRA SOLICITADA: O número da prateleira passa a ser identico ao ID do produto
+    $numero_prat = $id_estoque; 
 
     try {
         $pdo->beginTransaction();
@@ -34,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("Quantidade solicitada ({$caixas_mover}) é maior do que o saldo em estoque ({$produto['total_itens']}).");
         }
 
-        // 2. Calcula o peso correspondente (se existir coluna peso_un, usa ela; senão usa 0)
+        // 2. Calcula o peso correspondente
         $pesoUnidade = isset($produto['peso_un']) ? (float)$produto['peso_un'] : 0.0;
         $pesoCalculado = $pesoUnidade * $caixas_mover;
 
@@ -53,18 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($prateleiraExistente) {
             // Atualiza a quantidade e o peso na prateleira existente
-            $stmtPrat = $pdo->prepare("UPDATE prateleiras 
-                                       SET quantidade_atual = quantidade_atual + :qtd, 
-                                           peso_prat = peso_prat + :peso 
-                                       WHERE id_prat = :id_prat");
+            $stmtPrat = $pdo->prepare("UPDATE prateleiras SET quantidade_atual = quantidade_atual + :qtd, peso_prat = peso_prat + :peso WHERE id_prat = :id_prat");
             $stmtPrat->bindValue(':qtd', $caixas_mover, PDO::PARAM_INT);
             $stmtPrat->bindValue(':peso', $pesoCalculado);
             $stmtPrat->bindValue(':id_prat', $prateleiraExistente['id_prat'], PDO::PARAM_INT);
             $stmtPrat->execute();
         } else {
             // Insere preenchendo a coluna peso_prat obrigatória
-            $stmtPrat = $pdo->prepare("INSERT INTO prateleiras (id_estoque, numero_prat, quantidade_atual, peso_prat) 
-                                       VALUES (:id_est, :num_prat, :qtd, :peso)");
+            $stmtPrat = $pdo->prepare("INSERT INTO prateleiras (id_estoque, numero_prat, quantidade_atual, peso_prat) VALUES (:id_est, :num_prat, :qtd, :peso)");
             $stmtPrat->bindValue(':id_est', $id_estoque, PDO::PARAM_INT);
             $stmtPrat->bindValue(':num_prat', $numero_prat, PDO::PARAM_INT);
             $stmtPrat->bindValue(':qtd', $caixas_mover, PDO::PARAM_INT);
