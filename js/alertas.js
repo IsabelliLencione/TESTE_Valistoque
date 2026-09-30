@@ -1,3 +1,4 @@
+
 let intervaloMonitoramento = null;
 let intervaloAtual = null;
 
@@ -54,7 +55,7 @@ function normalizarTexto(texto) {
 
 
 /* =========================================================
-   DEFINIR NÍVEL DO ALERTA
+   DEFINIR ALERTA CRÍTICO
 ========================================================= */
 
 function ehCritico(tipo) {
@@ -72,7 +73,7 @@ function ehCritico(tipo) {
 
 
 /* =========================================================
-   DEFINIR CATEGORIA DO ALERTA
+   DEFINIR CATEGORIA
 ========================================================= */
 
 function categoriaAlerta(tipo) {
@@ -81,6 +82,9 @@ function categoriaAlerta(tipo) {
         normalizarTexto(tipo);
 
 
+    /*
+     * Alertas de validade
+     */
     if (
         texto.includes("validade") ||
         texto.includes("vencido")
@@ -91,6 +95,9 @@ function categoriaAlerta(tipo) {
     }
 
 
+    /*
+     * Alertas de estoque
+     */
     if (
         texto.includes("estoque")
     ) {
@@ -106,11 +113,72 @@ function categoriaAlerta(tipo) {
 
 
 /* =========================================================
+   DEFINIR CLASSE DE COR
+========================================================= */
+
+function classeCorAlerta(tipo) {
+
+    /*
+     * Crítico tem prioridade.
+     *
+     * Exemplos:
+     * Produto Vencido
+     * Estoque Central Baixo
+     */
+
+    if (ehCritico(tipo)) {
+
+        return "critico";
+
+    }
+
+
+    /*
+     * Validade
+     *
+     * Exemplo:
+     * Validade Próxima
+     */
+
+    if (
+        categoriaAlerta(tipo) === "validade"
+    ) {
+
+        return "validade";
+
+    }
+
+
+    /*
+     * Estoque
+     *
+     * Exemplo:
+     * Estoque Baixo Prateleira
+     */
+
+    if (
+        categoriaAlerta(tipo) === "estoque"
+    ) {
+
+        return "estoque";
+
+    }
+
+
+    return "aviso";
+
+}
+
+
+/* =========================================================
    ÍCONE DO SWEETALERT2
 ========================================================= */
 
 function iconeAlerta(tipo) {
 
+    /*
+     * Crítico
+     */
     if (ehCritico(tipo)) {
 
         return "error";
@@ -118,6 +186,9 @@ function iconeAlerta(tipo) {
     }
 
 
+    /*
+     * Validade
+     */
     if (
         categoriaAlerta(tipo) === "validade"
     ) {
@@ -127,24 +198,40 @@ function iconeAlerta(tipo) {
     }
 
 
-    return "warning";
+    /*
+     * Estoque
+     */
+    if (
+        categoriaAlerta(tipo) === "estoque"
+    ) {
+
+        return "info";
+
+    }
+
+
+    return "info";
 
 }
 
 
 /* =========================================================
-   COLOCAR ALERTAS NA FILA
+   ADICIONAR ALERTAS À FILA
 ========================================================= */
 
 function adicionarNaFila(alertas) {
 
     if (!Array.isArray(alertas)) {
+
         return;
+
     }
 
 
     if (alertas.length === 0) {
+
         return;
+
     }
 
 
@@ -159,18 +246,22 @@ function adicionarNaFila(alertas) {
 
 
 /* =========================================================
-   EXIBIR FILA DE ALERTAS
+   PROCESSAR FILA DE ALERTAS
 ========================================================= */
 
 async function processarFilaAlertas() {
 
     if (exibindoAlerta) {
+
         return;
+
     }
 
 
     if (filaAlertas.length === 0) {
+
         return;
+
     }
 
 
@@ -184,11 +275,9 @@ async function processarFilaAlertas() {
     await Toast.fire({
 
         icon:
-            alerta.nivel === "critico"
-                ? "error"
-                : iconeAlerta(
-                    alerta.tipo_alerta
-                ),
+            iconeAlerta(
+                alerta.tipo_alerta
+            ),
 
         titleText:
             alerta.tipo_alerta,
@@ -257,6 +346,7 @@ async function verificarAlertas(
             throw new Error(
                 "O servidor não retornou JSON válido."
             );
+
         }
 
 
@@ -266,6 +356,7 @@ async function verificarAlertas(
                 dados.erro ||
                 "Falha ao executar o servidor."
             );
+
         }
 
 
@@ -275,11 +366,12 @@ async function verificarAlertas(
                 dados.erro ||
                 "Não foi possível verificar os alertas."
             );
+
         }
 
 
         /* ===============================================
-           POPUPS
+           MOSTRAR POPUPS
         =============================================== */
 
         if (
@@ -334,7 +426,7 @@ async function verificarAlertas(
 
 
 /* =========================================================
-   CONFIGURAR INTERVALO AUTOMÁTICO
+   CONFIGURAR MONITORAMENTO AUTOMÁTICO
 ========================================================= */
 
 function configurarMonitoramento(
@@ -382,7 +474,9 @@ function configurarMonitoramento(
     intervaloMonitoramento =
         setInterval(
             () => {
+
                 verificarAlertas(true);
+
             },
             valor * 60 * 1000
         );
@@ -405,7 +499,9 @@ function renderizarHistorico(
 
 
     if (!lista) {
+
         return;
+
     }
 
 
@@ -437,6 +533,7 @@ function renderizarHistorico(
 
 
         return;
+
     }
 
 
@@ -449,17 +546,31 @@ function renderizarHistorico(
                 );
 
 
-            const critico =
-                ehCritico(
+            /*
+             * Descobre a cor do alerta.
+             *
+             * validade → amarelo
+             * estoque  → azul
+             * critico  → vermelho
+             */
+
+            const classeCor =
+                classeCorAlerta(
                     alerta.tipo_alerta
                 );
 
 
-            item.className =
-                critico
-                    ? "alerta-item critico"
-                    : "alerta-item aviso";
+            /*
+             * Classe principal do card.
+             */
 
+            item.className =
+                `alerta-item ${classeCor}`;
+
+
+            /*
+             * Guarda informações para os filtros.
+             */
 
             item.dataset.categoria =
                 categoriaAlerta(
@@ -468,9 +579,15 @@ function renderizarHistorico(
 
 
             item.dataset.nivel =
-                critico
+                ehCritico(
+                    alerta.tipo_alerta
+                )
                     ? "critico"
                     : "aviso";
+
+
+            item.dataset.idAlerta =
+                alerta.id_alerta;
 
 
             /* =========================================
@@ -519,6 +636,10 @@ function renderizarHistorico(
                 alerta.data_alerta;
 
 
+            /* =========================================
+               MONTAR CARD
+            ========================================= */
+
             item.appendChild(
                 titulo
             );
@@ -556,13 +677,21 @@ function atualizarResumo(
 ) {
 
     const total =
-        Number(resumo.total || 0);
+        Number(
+            resumo.total || 0
+        );
+
 
     const criticos =
-        Number(resumo.criticos || 0);
+        Number(
+            resumo.criticos || 0
+        );
+
 
     const avisos =
-        Number(resumo.avisos || 0);
+        Number(
+            resumo.avisos || 0
+        );
 
 
     const elementoTotal =
@@ -630,7 +759,9 @@ function filtrarAlertas(
 
                 botao.classList.toggle(
                     "ativo",
-                    botao.dataset.filtro === filtro
+
+                    botao.dataset.filtro ===
+                    filtro
                 );
 
             }
@@ -657,6 +788,10 @@ function aplicarFiltro() {
     itens.forEach(
         (item) => {
 
+            /*
+             * Mostrar todos
+             */
+
             if (
                 filtroAtual === "todos"
             ) {
@@ -669,12 +804,17 @@ function aplicarFiltro() {
             }
 
 
+            /*
+             * Mostrar apenas críticos
+             */
+
             if (
                 filtroAtual === "critico"
             ) {
 
                 item.style.display =
-                    item.dataset.nivel === "critico"
+                    item.dataset.nivel ===
+                    "critico"
                         ? ""
                         : "none";
 
@@ -683,8 +823,13 @@ function aplicarFiltro() {
             }
 
 
+            /*
+             * Mostrar validade ou estoque
+             */
+
             item.style.display =
-                item.dataset.categoria === filtroAtual
+                item.dataset.categoria ===
+                filtroAtual
                     ? ""
                     : "none";
 
@@ -703,7 +848,7 @@ window.filtrarAlertas =
 
 
 /* =========================================================
-   LIMPAR HISTÓRICO
+   LIMPAR TODO O HISTÓRICO
 ========================================================= */
 
 async function confirmarLimpezaAlertas() {
@@ -735,8 +880,12 @@ async function confirmarLimpezaAlertas() {
         });
 
 
-    if (!resultado.isConfirmed) {
+    if (
+        !resultado.isConfirmed
+    ) {
+
         return;
+
     }
 
 
@@ -759,18 +908,48 @@ async function confirmarLimpezaAlertas() {
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
-                            "application/x-www-form-urlencoded"
+                            "application/x-www-form-urlencoded",
+
+                        "Accept":
+                            "application/json"
+
                     },
 
                     body:
                         dadosFormulario.toString()
+
                 }
             );
 
 
-        const dados =
-            await resposta.json();
+        const textoResposta =
+            await resposta.text();
+
+
+        let dados;
+
+
+        try {
+
+            dados =
+                JSON.parse(
+                    textoResposta
+                );
+
+        } catch (erroJSON) {
+
+            console.error(
+                "Resposta do servidor:",
+                textoResposta
+            );
+
+            throw new Error(
+                "O servidor não retornou uma resposta JSON válida."
+            );
+
+        }
 
 
         if (
@@ -823,11 +1002,19 @@ async function confirmarLimpezaAlertas() {
 
 
         atualizarResumo({
+
             total: 0,
+
             criticos: 0,
+
             avisos: 0
+
         });
 
+
+        /* ===============================================
+           MENSAGEM DE SUCESSO
+        =============================================== */
 
         await Swal.fire({
 
@@ -880,7 +1067,7 @@ window.confirmarLimpezaAlertas =
 
 
 /* =========================================================
-   FEEDBACK DO SALVAMENTO DAS CONFIGURAÇÕES
+   FEEDBACK DO SALVAMENTO
 ========================================================= */
 
 function verificarFeedback() {
@@ -890,6 +1077,10 @@ function verificarFeedback() {
             window.location.search
         );
 
+
+    /* ===============================================
+       SUCESSO
+    =============================================== */
 
     if (
         parametros.has("sucesso")
@@ -913,6 +1104,10 @@ function verificarFeedback() {
 
     }
 
+
+    /* ===============================================
+       ERRO
+    =============================================== */
 
     if (
         parametros.has("erro")
@@ -1002,7 +1197,7 @@ function limparURL() {
 
 
 /* =========================================================
-   INICIALIZAÇÃO DA PÁGINA
+   INICIALIZAÇÃO
 ========================================================= */
 
 document.addEventListener(
@@ -1012,9 +1207,12 @@ document.addEventListener(
         verificarFeedback();
 
         /*
-         * Faz a primeira verificação imediatamente.
+         * Verifica os alertas imediatamente
+         * ao abrir a página.
          */
+
         verificarAlertas(true);
 
     }
 );
+

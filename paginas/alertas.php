@@ -530,45 +530,26 @@ if (isset($_GET["sucesso"])) {
                 <div>
 
                     <div class="alertas-resumo">
-
-                        <div class="resumo-box">
-
-                            <span>
-                                Total de alertas emitidos
-                            </span>
-
-                            <strong id="resumo-total-alertas">
-                                0
-                            </strong>
-
+                        <!-- Box Total (Azul) -->
+                        <div class="resumo-box alerta-total">
+                            <div class="resumo-icon">🔔</div>
+                            <span>Total de alertas emitidos</span>
+                            <strong id="resumo-total-alertas">0</strong>
                         </div>
 
-
+                        <!-- Box Crítico (Vermelho) -->
                         <div class="resumo-box alerta-critico">
-
-                            <span>
-                                Alertas críticos
-                            </span>
-
-                            <strong id="resumo-alertas-criticos">
-                                0
-                            </strong>
-
+                            <div class="resumo-icon">🛑</div>
+                            <span>Alertas críticos</span>
+                            <strong id="resumo-alertas-criticos">0</strong>
                         </div>
 
-
+                        <!-- Box Aviso (Laranja) -->
                         <div class="resumo-box alerta-aviso">
-
-                            <span>
-                                Alertas de aviso
-                            </span>
-
-                            <strong id="resumo-alertas-aviso">
-                                0
-                            </strong>
-
+                            <div class="resumo-icon">⚠️</div>
+                            <span>Alertas de aviso</span>
+                            <strong id="resumo-alertas-aviso">0</strong>
                         </div>
-
                     </div>
 
 
@@ -606,7 +587,7 @@ if (isset($_GET["sucesso"])) {
                                     font-weight: 600;
                                 "
                             >
-                                Limpar Histórico
+                                🗑 Limpar Histórico
                             </button>
 
 
