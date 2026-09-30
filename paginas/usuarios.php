@@ -3,66 +3,65 @@ require_once __DIR__ . '/../php/config.php';
 
 $usuarioParaEditar = null;
 
-// 1. Se veio 'editar_id' na URL, busca os dados no banco para preencher o formulário
+// 1. Busca os dados do usuário caso venha um ID para edição na URL
 if (isset($_GET['editar_id'])) {
-    $idEditar = filter_input(INPUT_GET, 'editar_id', FILTER_VALIDATE_INT);
-    if ($idEditar) {
-        $stmt = $pdo->prepare("SELECT id, nome, email, cpf, tipo FROM usuarios WHERE id = :id");
-        $stmt->bindValue(':id', $idEditar, PDO::PARAM_INT);
+    $id_editar = filter_input(INPUT_GET, 'editar_id', FILTER_VALIDATE_INT);
+    if ($id_editar) {
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE id = :id");
+        $stmt->bindValue(':id', $id_editar, PDO::PARAM_INT);
         $stmt->execute();
         $usuarioParaEditar = $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 
-// 2. Processamento do Envio do Formulário (POST)
+// 2. Processa o salvamento (Cadastro ou Edição)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_usuario = filter_input(INPUT_POST, 'id_usuario', FILTER_VALIDATE_INT);
-    $nome = $_POST['nome-usuario'];
-    $email = $_POST['email-usuario'];
-    $cpf = $_POST['cpf-usuario'];
-    $senha = $_POST['senha'];
-    $tipo = $_POST['tipo-usuario'];
+    $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+    $nome = trim($_POST['nome']);
+    $email = trim(strtolower($_POST['email']));
+    $cpf = trim($_POST['cpf']);
+    $senha_digitada = trim($_POST['senha']);
+    $tipo = $_POST['tipo'];
 
     try {
-        if ($id_usuario) {
-            // EDITAR: Se já existe um ID, faz UPDATE
-            if (!empty($senha)) {
-                // Atualiza com nova senha
+        if ($id) {
+            // Se tem ID, atualiza o usuário existente (UPDATE)
+            if (!empty($senha_digitada)) {
+                // Se digitou uma nova senha, atualiza a senha também (híbrido/texto limpo conforme seu banco atual)
                 $sql = "UPDATE usuarios SET nome = ?, email = ?, cpf = ?, senha = ?, tipo = ? WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$nome, $email, $cpf, $senha, $tipo, $id_usuario]);
+                $stmt->execute([$nome, $email, $cpf, $senha_digitada, $tipo, $id]);
             } else {
-                // Atualiza mantendo a senha atual
+                // Se deixou a senha em branco na edição, mantém a senha atual
                 $sql = "UPDATE usuarios SET nome = ?, email = ?, cpf = ?, tipo = ? WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$nome, $email, $cpf, $tipo, $id_usuario]);
+                $stmt->execute([$nome, $email, $cpf, $tipo, $id]);
             }
         } else {
-            // CADASTRAR: Se não tem ID, faz INSERT
-            if ($senha !== $_POST['confirmsenha']) {
-                die("As senhas não são iguais!");
-            }
+            // Se não tem ID, cria um usuário novo (INSERT)
             $sql = "INSERT INTO usuarios (nome, email, cpf, senha, tipo) VALUES (?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nome, $email, $cpf, $senha, $tipo]);
+            $stmt->execute([$nome, $email, $cpf, $senha_digitada, $tipo]);
         }
 
+        // Redireciona para a listagem de usuários após salvar
         header("Location: ListaUsuarios.php");
         exit;
 
     } catch (PDOException $e) {
-        die("Erro ao salvar usuário: " . $e->getMessage());
+        die("Erro ao salvar o usuário: " . $e->getMessage());
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuarios</title>
+    <title>Cadastro de Usuários</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/usuarios.css">
+    <link rel="stylesheet" href="../css/produtos.css">
 </head>
 <body>
 <nav class="nav"> 
@@ -172,14 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
                     <button type="submit">Cadastrar</button>
             </form>
-            </div>
-            
-           
-           
-    </div>
-        
-        
-<script  src="../js/usuarios.js"></script>
-</main>
+        </div>
+    </main>
 </body>
 </html>

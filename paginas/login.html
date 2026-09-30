@@ -9,10 +9,10 @@
 
     <title>Login - Valistoque</title>
 
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com" rel="stylesheet" />
 
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Rationale&display=swap");
+        @import url("https://googleapis.com");
 
         * {
             margin: 0;
@@ -190,12 +190,12 @@
             <h1>Login</h1>
 
             <p style="
-                    text-align: center;
-                    color: #4d6670;
-                    margin-top: -8px;
-                    margin-bottom: 10px;
-                ">
-                Escolha o perfil e entre no protótipo.
+                text-align: center;
+                color: #4d6670;
+                margin-top: -8px;
+                margin-bottom: 10px;
+            ">
+                Acesso do sistema.
             </p>
 
             <div class="login-box">
@@ -223,7 +223,7 @@
                     </option>
 
                     <option value="funcionario">
-                        Funcionário
+                        Funcionario
                     </option>
 
                 </select>
@@ -249,7 +249,8 @@
             </button>
 
             <p class="baixo">
-                &copy; 2026 Valistoque. Todos os direitos reservados.
+                &copy; 2026 Valistoque.
+                Todos os direitos reservados.
             </p>
 
         </form>
@@ -280,23 +281,20 @@
                         .value
                         .trim();
 
-                const perfil =
+                const tipoAcesso =
                     document
                         .getElementById("perfil")
                         .value;
 
                 if (!email || !senha) {
-
                     alert("Preencha email e senha.");
-
                     return;
                 }
 
                 const dados = new FormData();
-
                 dados.append("email", email);
                 dados.append("senha", senha);
-                dados.append("perfil", perfil);
+                dados.append("tipo_acesso", tipoAcesso);
 
                 try {
 
@@ -312,54 +310,31 @@
                     if (resultado.sucesso) {
 
                         const dadosUsuario = {
-
                             id: resultado.usuario.id,
-
-                            email:
-                                resultado.usuario.email,
-
-                            perfil:
-                                resultado.usuario.tipo,
-
-                            nome:
-                                resultado.usuario.nome
-
+                            email: resultado.usuario.email,
+                            perfil: resultado.usuario.tipo,
+                            nome: resultado.usuario.nome
                         };
 
-                        localStorage.setItem(
-                            "valistoqueUsuario",
-                            JSON.stringify(dadosUsuario)
-                        );
+                        localStorage.setItem("usuario", JSON.stringify(dadosUsuario));
 
-                        localStorage.setItem(
-                            "perfilUsuario",
-                            JSON.stringify(dadosUsuario)
-                        );
-
-                        window.location.href =
-                            "../index.html";
+                        // Envia para telas diferentes com base no tipo de conta validado no banco
+                        if (resultado.usuario.tipo.toLowerCase() === "administrador") {
+                            window.location.href = "usuarios.php";
+                        } else {
+                            window.location.href = "estoque.php";
+                        }
 
                     } else {
-
                         alert(resultado.mensagem);
-
                     }
 
-                } catch (erro) {
-
-                    console.error(erro);
-
-                    alert(
-                        "Erro ao conectar com o servidor."
-                    );
-
+                } catch (error) {
+                    alert("Falha ao conectar-se ao servidor.");
                 }
-
             }
         );
-
     </script>
-
 </body>
 
 </html>
