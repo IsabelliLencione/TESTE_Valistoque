@@ -55,10 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="../css/produtos.css">
 </head>
 <body>
-<nav class="nav"> 
-  <div class="header-nav">Valistoque</div> 
-  <ul> 
-    <!-- Relatório -->
+    <nav class="nav">
+        <div class="header-nav">Valistoque</div>
+        <ul>
+            <!-- Relatório -->
     <li>
       <a href="relatorio.php">
         <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
@@ -121,10 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         Perfil
       </a>
     </li> 
-  </ul> 
-</nav>
-
-
+        </ul>
+    </nav>
     <main>
         <!-- CADASTRO DOS PRODUTOS -->
         <div id="secao-produto">
