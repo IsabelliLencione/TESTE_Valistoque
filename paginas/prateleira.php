@@ -1,3 +1,20 @@
+<?php
+require_once __DIR__ . '/../php/config.php';
+
+try {
+    // Busca as prateleiras cadastradas trazendo o nome do produto e lote do estoque
+    $sql = "SELECT p.id_prat, p.numero_prat, p.quantidade_atual, e.nome_produto, e.lote, e.data_validade 
+            FROM prateleiras p 
+            INNER JOIN estoque e ON p.id_estoque = e.id_estoque 
+            ORDER BY p.numero_prat ASC";
+    $stmt = $pdo->query($sql);
+    $prateleiras = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erro ao buscar prateleiras: " . $e->getMessage());
+}
+?>
+
+
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -97,10 +114,23 @@
             </form>
 
 
-            <!-- Lista de prateleiras -->
-            <div class="prateleiras-container">
-                <!-- As prateleiras serão carregadas pelo JavaScript -->
+          <div class="prateleiras-container">
+    <?php if (empty($prateleiras)): ?>
+        <div class="sem-resultados">Nenhuma prateleira cadastrada.</div>
+    <?php else: ?>
+        <?php foreach ($prateleiras as $prat): ?>
+            <div class="prateleira-card-horizontal">
+                <div class="prat-numero">Prateleira <?= htmlspecialchars($prat['numero_prat']) ?></div>
+                <div class="prat-detalhes">
+                    <h4><?= htmlspecialchars($prat['nome_produto']) ?></h4>
+                    <p><strong>Alocado:</strong> <?= htmlspecialchars($prat['quantidade_atual']) ?> caixas/unidades</p>
+                    <p><strong>Validade:</strong> <?= date('d/m/Y', strtotime($prat['data_validade'])) ?></p>
+                    <p><strong>Lote:</strong> <?= htmlspecialchars($prat['lote']) ?></p>
+                </div>
             </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
 
 
             <!-- Janela para cadastrar uma prateleira -->

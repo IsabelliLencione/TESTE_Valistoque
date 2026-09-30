@@ -352,7 +352,7 @@ function verificarEDispararAlerta(
         <li><a href="alertas.php">Alertas</a></li> 
         <li><a href="ListaUsuarios.php">Usuários</a></li>
         <li style="margin-top: auto; border-top: 1px solid #34495e;">
-            <a href="perfil.html">Perfil</a>
+            <a href="perfil.php">Perfil</a>
         </li> 
     </ul> 
 </nav>

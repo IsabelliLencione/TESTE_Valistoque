@@ -53,7 +53,6 @@ try {
             <h1>Estoque Central <?= $verInativos ? '(Desativados)' : '' ?></h1>
             
             <div style="display: flex; gap: 10px;">
-                <!-- Botão Alternar entre Ativos e Desativados -->
                 <?php if ($verInativos): ?>
                     <a href="estoque.php?ver_inativos=0" class="btn-editar" style="background:#34495e; text-decoration:none; padding:10px 15px; border-radius:8px; color:#fff; font-weight:bold;">Ver Produtos Ativos</a>
                 <?php else: ?>
@@ -88,15 +87,13 @@ try {
                                 </button>
                                 <a href="produtos.php?editar_id=<?= $est['id_estoque'] ?>" class="btn-editar">Editar</a>
                                 
-                                <!-- Botão Desativar -->
-                               <a href="desativar_produto.php?id=<?= $est['id_estoque'] ?>&status=0&ver_inativos=0" 
+                                <a href="desativar_produto.php?id=<?= $est['id_estoque'] ?>&status=0&ver_inativos=0" 
                                 class="btn-excluir" 
                                 style="background-color: #c52727d8; color: #ffffff; font-weight: bold; text-decoration: none;"
                                  onclick="return confirm('Deseja realmente desativar este produto?');">
                                   Desativar
                                 </a>
                             <?php else: ?>
-                                <!-- Botão Reativar -->
                                 <a href="desativar_produto.php?id=<?= $est['id_estoque'] ?>&status=1&ver_inativos=1" 
                                    class="btn-editar" 
                                    style="background-color: #27ae60; width: 100%; text-align: center;"
@@ -121,7 +118,7 @@ try {
         <form action="mover_para_prateleira.php" method="POST">
             <input type="hidden" id="mover_id_estoque" name="id_estoque">
             
-            <label for="numero_prat" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Número da Prateleira:</label>
+            <label for="numero_prat" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Número da Prateleira Alvo:</label>
             <input type="number" id="numero_prat" name="numero_prat" min="1" required placeholder="Ex: 1" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
 
             <label for="caixas_mover" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Quantidade a Mover:</label>
@@ -140,6 +137,7 @@ function abrirModalMover(id, nome, maxQtd) {
     const inputQtd = document.getElementById('caixas_mover');
     inputQtd.max = maxQtd;
     inputQtd.value = '';
+    document.getElementById('numero_prat').value = '';
     
     document.getElementById('modalMoverPrateleira').showModal();
 }
