@@ -1,46 +1,46 @@
-
 html,
 body {
     height: 100%;
     margin: 0;
-    overflow: hidden;
+    background-color: #f4f6f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 main {
-    padding: 15px;
-    height: 100vh;
+    padding: 24px;
+    min-height: 100vh;
     box-sizing: border-box;
-    overflow: hidden;
 }
 
-
 #secao-relatorio {
-    height: 100%;
+    width: 100%;
 }
 
 .relatorio-container {
-    background-color: #e9e9e9;
-    padding: 15px;
-    border-radius: 4px;
+    background-color: #eef2f5;
+    padding: 20px;
+    border-radius: 6px;
     width: 100%;
-    height: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .content-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    height: 45px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .month-selector {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 20px;
+    gap: 15px;
+    font-size: 22px;
+    font-weight: 500;
 }
 
 .seta-mes {
@@ -49,91 +49,123 @@ main {
     font-weight: bold;
     -webkit-user-select: none;
     user-select: none;
+    transition: transform 0.1s ease;
+}
+
+.seta-mes:hover {
+    transform: scale(1.2);
 }
 
 .content-header h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #1a252f;
 }
 
 .cards-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 20px;
+    width: 100%;
 }
 
 .card {
     background: white;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 240px;
+    box-sizing: border-box;
 }
 
 .card h3 {
     text-align: center;
-    font-size: 13px;
-    margin: 0 0 6px 0;
+    font-size: 14px;
+    margin: 0 0 15px 0;
     font-weight: bold;
+    color: #000000;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    bottom: 25px;
+    width: 3px;
+    background-color: #000000;
+    border-radius: 2px;
 }
 
 .card-list-scroll {
-    height: 90px;
     overflow-y: auto;
-    padding-right: 8px;
-    border-right: 4px solid #1a252f;
+    padding-right: 25px;
+    max-height: 180px;
 }
 
 .card-list-scroll::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
+}
+
+.card-list-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
 }
 
 .card-list-scroll::-webkit-scrollbar-thumb {
-    background: #232f1a;
+    background: #cbd5e1;
     border-radius: 10px;
 }
 
+.relatorio-item,
 .list-item {
+    border-bottom: 1px solid #f1f5f9;
+    padding: 8px 0;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.relatorio-item:last-child,
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.relatorio-item strong,
+.list-item strong {
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.relatorio-item span,
+.list-item span {
     font-size: 12px;
-    padding: 3px 0;
-    border-bottom: 1px solid #eee;
+    color: #64748b;
 }
 
-.alert-card {
-    background: white;
-    padding: 10px;
-    border-radius: 4px;
-    margin-top: 10px;
+.relatorio-item small,
+.list-item small {
+    font-size: 11px;
+    color: #94a3b8;
 }
 
-.alert-card h3 {
-    margin: 0 0 6px 0;
-    font-size: 14px;
+.item-vazio {
+    font-size: 13px;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 35px;
+    font-style: italic;
 }
 
-.alert-content {
-    display: flex;
-    background-color: #ededed;
-    padding: 10px;
-    border-radius: 4px;
-    align-items: center;
+.card:nth-child(5) {
+    grid-column: span 2;
+    min-height: 200px;
 }
 
-.alert-list-scroll {
-    flex: 2;
-    height: 55px;
-    overflow-y: auto;
-    padding-right: 8px;
-    border-right: 4px solid #1a252f;
+.card:nth-child(5) h3 {
+    text-align: left;
 }
-
-.alert-list-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.alert-list-scroll::-webkit-scrollbar-thumb {
-    background: #232f1a;
-    border-radius: 10px;
-}
-
