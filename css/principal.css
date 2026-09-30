@@ -33,30 +33,30 @@
         }
 
         
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            width: 100%;
-            max-width: 100%; 
-            padding: 0 5%;  
-            margin-bottom: 60px;
-            justify-content: flex-start;
-        }
+     .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 0px; 
+        width: 100%;
+        max-width: 100%; 
+        padding: 0 5%;  
+        margin-bottom: 60px;
+        justify-content: flex-start;
+}
 
         .logo-container img {
             height: 100px;
             width: auto;
         }
 
-        .logo-container .nome {
-            font-family: Georgia, serif;
-            font-weight: bold;
-            font-size: 30px;
-            color: rgb(40, 40, 180); 
-            margin: 0;
-            letter-spacing: -1px;
-        }
+     .logo-container .nome {
+        font-family: Georgia, serif;
+        font-weight: bold;
+        font-size: 30px;
+        color: rgb(40, 40, 180); 
+        margin: 0; 
+        letter-spacing: -1px;
+}
 
         .cor-diferente {
             color: rgb(34, 160, 34); 
