@@ -1,17 +1,16 @@
-<?php
+Aqui está o código completo do arquivo mover_para_prateleira.php.   Ele realiza a transferência do estoque central para a prateleira com segurança (usando transação e bloqueio de linha no banco de dados) e registra as alterações do lote e das prateleiras:   PHP<?php
 require_once __DIR__ . '/../php/config.php';
 
 /*
  * Move unidades do estoque central para uma prateleira existente.
  *
  * Regras principais:
- * - a quantidade movimentada é sempre em unidades;
- * - a prateleira nunca é criada aqui, apenas selecionada;
- * - prateleira vazia recebe o lote;
- * - mesmo lote: soma a quantidade;
- * - lote diferente: exige confirmação e, se confirmado, substitui o lote;
- * - a transferência manual não altera ultima_leitura, pois esse campo
- *   representa somente uma leitura real do sensor.
+ * - A quantidade movimentada é sempre em unidades;
+ * - A prateleira nunca é criada aqui, apenas selecionada;
+ * - Prateleira vazia recebe o lote;
+ * - Mesmo lote: soma a quantidade;
+ * - Lote diferente: exige confirmação e, se confirmado, substitui o lote;
+ * - A transferência manual não altera ultima_leitura.
  */
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -31,7 +30,7 @@ if (!$id_estoque || !$id_prat || !$quantidade || $quantidade <= 0) {
 try {
     $pdo->beginTransaction();
 
-    // Bloqueia o lote durante a operação para evitar movimentações simultâneas conflitantes.
+    // Bloqueia o lote durante a operação para evitar movimentações simultâneas conflitantes
     $stmt = $pdo->prepare(
         "SELECT * FROM estoque WHERE id_estoque = :id AND ativo = 1 FOR UPDATE"
     );
@@ -54,7 +53,7 @@ try {
         throw new Exception('O peso unitário deste lote é inválido.');
     }
 
-    // A prateleira precisa existir. Também a bloqueamos durante a transferência.
+    // Bloqueia a prateleira durante a transferência
     $stmt = $pdo->prepare(
         "SELECT * FROM prateleiras WHERE id_prat = :id_prat FOR UPDATE"
     );
@@ -69,8 +68,7 @@ try {
     $loteAtual = $prateleira['id_estoque'];
     $estoqueAtual = null;
 
-    // Se já existe outro lote na prateleira, buscamos seus dados para
-    // mostrar claramente ao usuário o que será substituído.
+    // Se já existe outro lote na prateleira, busca os dados do lote anterior
     if ($loteAtual !== null && (int)$loteAtual !== (int)$id_estoque) {
         $stmt = $pdo->prepare("SELECT lote, nome_produto FROM estoque WHERE id_estoque = :id");
         $stmt->bindValue(':id', $loteAtual, PDO::PARAM_INT);
@@ -78,7 +76,7 @@ try {
         $estoqueAtual = $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Se já existe outro lote na prateleira, precisamos confirmar a substituição.
+    // Se a prateleira já está ocupada por outro lote e ainda não foi confirmada a substituição
     if ($loteAtual !== null && (int)$loteAtual !== (int)$id_estoque && !$confirmar_substituicao) {
         $pdo->rollBack();
         ?>
@@ -114,11 +112,11 @@ try {
                         <input type="hidden" name="id_prat" value="<?= (int)$id_prat ?>">
                         <input type="hidden" name="quantidade_mover" value="<?= (int)$quantidade ?>">
                         <button type="submit" name="confirmar_substituicao" value="1"
-                                style="background:#2ecc71; color:#fff; border:0; padding:12px 18px; border-radius:8px; cursor:pointer;">
+                                style="background:#2ecc71; color:#fff; border:0; padding:12px 18px; border-radius:8px; cursor:pointer; font-weight:bold;">
                             Continuar
                         </button>
                         <a href="estoque.php"
-                           style="background:#95a5a6; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px;">
+                           style="background:#95a5a6; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px; font-weight:bold;">
                             Cancelar
                         </a>
                     </form>
@@ -132,7 +130,7 @@ try {
 
     $pesoCalculado = $pesoUnidade * $quantidade;
 
-    // Retira as unidades do estoque central.
+    // Retira as unidades do estoque central
     $stmt = $pdo->prepare(
         "UPDATE estoque SET total_itens = total_itens - :quantidade WHERE id_estoque = :id"
     );
@@ -141,7 +139,7 @@ try {
     $stmt->execute();
 
     if ($loteAtual === null) {
-        // Prateleira vazia: cria a associação com o lote e a quantidade transferida.
+        // Prateleira vazia: cria a associação com o lote e a quantidade transferida
         $stmt = $pdo->prepare(
             "UPDATE prateleiras
              SET id_estoque = :id_estoque,
@@ -156,7 +154,7 @@ try {
         $stmt->bindValue(':id_prat', $id_prat, PDO::PARAM_INT);
         $stmt->execute();
     } elseif ((int)$loteAtual === (int)$id_estoque) {
-        // Mesmo lote: soma as unidades e recalcula o peso inicial da prateleira.
+        // Mesmo lote: soma as unidades e recalcula o peso inicial da prateleira
         $novaQuantidade = (int)$prateleira['qte'] + $quantidade;
         $novoPeso = $pesoUnidade * $novaQuantidade;
 
@@ -171,7 +169,7 @@ try {
         $stmt->bindValue(':id_prat', $id_prat, PDO::PARAM_INT);
         $stmt->execute();
     } else {
-        // Lote diferente com confirmação: substitui a associação atual.
+        // Lote diferente com confirmação: substitui a associação atual
         $stmt = $pdo->prepare(
             "UPDATE prateleiras
              SET id_estoque = :id_estoque,
