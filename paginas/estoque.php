@@ -90,13 +90,15 @@ try {
       </a>
     </li>
     
-    <!-- Perfil -->
-    <li style="margin-top: auto; border-top: 1px solid #34495e;">
-      <a href="perfil.php">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.07-3-3s1.07-3 3-3 3 1.07 3 3-1.07 3-3 3z"/></svg>
-        Perfil
+    
+   <li style="margin-top: auto; border-top: 1px solid #34495e;">
+      <a href="principal.html">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+      </svg>
+      Sair
       </a>
-    </li> 
+  </li>
   </ul> 
 </nav>
 
@@ -106,7 +108,6 @@ try {
             <h1>Estoque Central <?= $verInativos ? '(Desativados)' : '' ?></h1>
             
             <div style="display: flex; gap: 10px;">
-                <!-- Botão Alternar entre Ativos e Desativados -->
                 <?php if ($verInativos): ?>
                     <a href="estoque.php?ver_inativos=0" class="btn-editar" style="background:#34495e; text-decoration:none; padding:10px 15px; border-radius:8px; color:#fff; font-weight:bold;">Ver Produtos Ativos</a>
                 <?php else: ?>
@@ -141,15 +142,13 @@ try {
                                 </button>
                                 <a href="produtos.php?editar_id=<?= $est['id_estoque'] ?>" class="btn-editar">Editar</a>
                                 
-                                <!-- Botão Desativar -->
-                               <a href="desativar_produto.php?id=<?= $est['id_estoque'] ?>&status=0&ver_inativos=0" 
+                                <a href="desativar_produto.php?id=<?= $est['id_estoque'] ?>&status=0&ver_inativos=0" 
                                 class="btn-excluir" 
                                 style="background-color: #c52727d8; color: #ffffff; font-weight: bold; text-decoration: none;"
                                  onclick="return confirm('Deseja realmente desativar este produto?');">
                                   Desativar
                                 </a>
                             <?php else: ?>
-                                <!-- Botão Reativar -->
                                 <a href="desativar_produto.php?id=<?= $est['id_estoque'] ?>&status=1&ver_inativos=1" 
                                    class="btn-editar" 
                                    style="background-color: #27ae60; width: 100%; text-align: center;"
@@ -194,6 +193,7 @@ function abrirModalMover(id, nome, maxQtd) {
     const inputQtd = document.getElementById('caixas_mover');
     inputQtd.max = maxQtd;
     inputQtd.value = '';
+    document.getElementById('numero_prat').value = '';
     
     document.getElementById('modalMoverPrateleira').showModal();
 }

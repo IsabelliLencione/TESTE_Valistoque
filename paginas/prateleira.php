@@ -1,3 +1,20 @@
+<?php
+require_once __DIR__ . '/../php/config.php';
+
+try {
+    // Busca as prateleiras cadastradas trazendo o nome do produto e lote do estoque
+    $sql = "SELECT p.id_prat, p.numero_prat, p.quantidade_atual, e.nome_produto, e.lote, e.data_validade 
+            FROM prateleiras p 
+            INNER JOIN estoque e ON p.id_estoque = e.id_estoque 
+            ORDER BY p.numero_prat ASC";
+    $stmt = $pdo->query($sql);
+    $prateleiras = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erro ao buscar prateleiras: " . $e->getMessage());
+}
+?>
+
+
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -77,13 +94,15 @@
       </a>
     </li>
     
-    <!-- Perfil -->
-    <li style="margin-top: auto; border-top: 1px solid #34495e;">
-      <a href="perfil.php">
-        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.07-3-3s1.07-3 3-3 3 1.07 3 3-1.07 3-3 3z"/></svg>
-        Perfil
+   
+  <li style="margin-top: auto; border-top: 1px solid #34495e;">
+      <a href="principal.html">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+      </svg>
+      Sair
       </a>
-    </li> 
+  </li>
   </ul> 
 </nav>
 
