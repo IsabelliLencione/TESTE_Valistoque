@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionar_prateleira'
         $stmtAdicionar = $pdo->prepare("
             INSERT INTO prateleiras (peso_prat, qte, ultima_leitura)
             VALUES (0, NULL, NULL)
-        \"");
+        ");
         $stmtAdicionar->execute();
 
         header('Location: prateleira.php');
@@ -208,7 +208,7 @@ try {
                         <h4><?= htmlspecialchars($prat['nome_produto']) ?></h4>
                         <p><strong>Lote:</strong> <?= htmlspecialchars($prat['lote']) ?></p>
                         <p><strong>Quantidade:</strong> <?= (int)$prat['qte'] ?> unidades</p>
-                        <p><strong>Peso Total:</strong> <?= number_format((float)$prat['peso_prat'] / 1000, 2, ',', '.') ?> kg</p>
+                        <p><strong>Peso Total:</strong> <?= number_format((float)$prat['peso_prat'] / 1000, 3, ',', '.') ?> kg</p>
 
                         <?php if (!empty($prat['ultima_leitura'])): ?>
                             <p><strong>Última leitura:</strong> <?= htmlspecialchars(date('d/m/Y H:i:s', strtotime($prat['ultima_leitura']))) ?></p>
