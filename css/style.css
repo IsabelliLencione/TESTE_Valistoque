@@ -75,10 +75,10 @@ body {
   height: 20px;
   margin-right: 12px;
   vertical-align: middle;
-  fill: currentColor; /* Faz o ícone ter exatamente a mesma cor do texto do link */
+  fill: currentColor; 
 }
 
-/* Garante que o texto do link fique alinhado horizontalmente com o ícone */
+
 .nav ul li a {
   display: flex;
   align-items: center;

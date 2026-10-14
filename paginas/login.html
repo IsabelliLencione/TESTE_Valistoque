@@ -257,84 +257,82 @@
 
     </main>
 
-    <script>
+<script>
+    // ==========================================
+    // CONFIGURAÇÃO: DIGITE O NOME DAS SUAS PÁGINAS AQUI
+    // ==========================================
+    const PAGINA   = "relatorio.php";  
+    // ==========================================
 
-        const formLogin =
-            document.getElementById("login-form");
+    const formLogin = document.getElementById("login-form");
 
-        formLogin.addEventListener(
-            "submit",
-            async (event) => {
+    formLogin.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-                event.preventDefault();
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const senha = document.getElementById("senha").value.trim();
+        const tipoAcesso = document.getElementById("perfil").value;
 
-                const email =
-                    document
-                        .getElementById("email")
-                        .value
-                        .trim()
-                        .toLowerCase();
+        if (!email || !senha) {
+            alert("Preencha email e senha.");
+            return;
+        }
 
-                const senha =
-                    document
-                        .getElementById("senha")
-                        .value
-                        .trim();
+        const dados = new FormData();
+        dados.append("email", email);
+        dados.append("senha", senha);
+        dados.append("tipo_acesso", tipoAcesso);
 
-                const tipoAcesso =
-                    document
-                        .getElementById("perfil")
-                        .value;
+        try {
+            const resposta = await fetch("login.php", {
+                method: "POST",
+                body: dados
+            });
 
-                if (!email || !senha) {
-                    alert("Preencha email e senha.");
-                    return;
-                }
-
-                const dados = new FormData();
-                dados.append("email", email);
-                dados.append("senha", senha);
-                dados.append("tipo_acesso", tipoAcesso);
-
-                try {
-
-                    const resposta =
-                        await fetch("login.php", {
-                            method: "POST",
-                            body: dados
-                        });
-
-                    const resultado =
-                        await resposta.json();
-
-                    if (resultado.sucesso) {
-
-                        const dadosUsuario = {
-                            id: resultado.usuario.id,
-                            email: resultado.usuario.email,
-                            perfil: resultado.usuario.tipo,
-                            nome: resultado.usuario.nome
-                        };
-
-                        localStorage.setItem("usuario", JSON.stringify(dadosUsuario));
-
-                        // Envia para telas diferentes com base no tipo de conta validado no banco
-                        if (resultado.usuario.tipo.toLowerCase() === "administrador") {
-                            window.location.href = "usuarios.php";
-                        } else {
-                            window.location.href = "estoque.php";
-                        }
-
-                    } else {
-                        alert(resultado.mensagem);
-                    }
-
-                } catch (error) {
-                    alert("Falha ao conectar-se ao servidor.");
-                }
+            // Verifica se o servidor retornou uma resposta válida (status 200)
+            if (!resposta.ok) {
+                throw new Error("Erro na requisição com o servidor.");
             }
-        );
-    </script>
+
+            const resultado = await resposta.json();
+
+            if (resultado.sucesso) {
+                const dadosUsuario = {
+                    id: resultado.usuario.id,
+                    email: resultado.usuario.email,
+                    perfil: resultado.usuario.tipo,
+                    nome: resultado.usuario.nome
+                };
+
+                localStorage.setItem("usuario", JSON.stringify(dadosUsuario));
+
+                // Normaliza o texto vindo do banco limpando espaços e acentos para evitar erros de comparação
+                const tipoUsuarioBanco = resultado.usuario.tipo
+                    .trim()
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+
+                // Redireciona de forma dinâmica usando as variáveis configuradas no topo
+                if (tipoUsuarioBanco === "administrador") {
+                    window.location.href = PAGINA ;
+                } else if (tipoUsuarioBanco === "funcionario") {
+                    window.location.href = PAGINA ;
+                } else {
+                    alert("Perfil de acesso desconhecido retornado pelo servidor.");
+                }
+
+            } else {
+                alert(resultado.mensagem);
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Falha ao conectar-se ao servidor ou processar o login. Verifique se o login.php está na mesma pasta.");
+        }
+    });
+</script>
+
 </body>
 
 </html>

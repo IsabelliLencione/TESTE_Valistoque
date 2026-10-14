@@ -18,7 +18,7 @@ $tipo_acesso = $_POST["tipo_acesso"] ?? "";
 
 $email = trim(strtolower($email));
 $senha = trim($senha);
-$tipo_acesso = trim(strtolower($tipo_acesso));
+$tipo_acesso = trim(strtolower($tipo_acesso)); // Ex: 'administrador' ou 'funcionario'
 
 if ($email === "" || $senha === "" || $tipo_acesso === "") {
     echo json_encode([
@@ -29,6 +29,7 @@ if ($email === "" || $senha === "" || $tipo_acesso === "") {
 }
 
 try {
+    // Busca o usuário pelo e-mail
     $sql = "SELECT id, nome, email, cpf, senha, tipo
             FROM usuarios
             WHERE email = :email
@@ -38,6 +39,7 @@ try {
     $stmt->execute([":email" => $email]);
     $usuario = $stmt->fetch();
 
+    // Se não encontrar o e-mail
     if (!$usuario) {
         echo json_encode([
             "sucesso" => false,
@@ -46,8 +48,9 @@ try {
         exit;
     }
 
-    // VALIDAÇÃO CRUZADA: Garante que o tipo do banco é idêntico ao selecionado na tela
-    if (strtolower($usuario["tipo"]) !== $tipo_acesso) {
+    // VALIDAÇÃO CRUZADA CORRIGIDA: Usa strcasecmp para ignorar maiúsculas/minúsculas 
+    // Assim, 'Administrador' no banco e 'administrador' na tela vão dar match perfeitamente!
+    if (strcasecmp($usuario["tipo"], $tipo_acesso) !== 0) {
         echo json_encode([
             "sucesso" => false,
             "mensagem" => "Usuário incorreto para este tipo de perfil de acesso."
@@ -55,7 +58,7 @@ try {
         exit;
     }
 
-    // Validação da Senha (suporta texto limpo ou hash)
+    // Validação da Senha (aceita 'admin123'/'func123' em texto puro ou via hash)
     if (!password_verify($senha, $usuario["senha"]) && $senha !== $usuario["senha"]) {
         echo json_encode([
             "sucesso" => false,
@@ -64,15 +67,17 @@ try {
         exit;
     }
 
-    // ATENÇÃO: Inicia a sessão do PHP para que a página perfil.php possa ler o tipo correto
+    // Inicia a sessão do PHP
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+    
     $_SESSION["usuario_id"] = $usuario["id"];
     $_SESSION["usuario_nome"] = $usuario["nome"];
     $_SESSION["usuario_email"] = $usuario["email"];
-    $_SESSION["usuario_tipo"] = $usuario["tipo"]; // Salva 'administrador' ou 'funcionario' vindo do banco
+    $_SESSION["usuario_tipo"] = $usuario["tipo"]; 
 
+    // Retorna o sucesso para o seu JavaScript/Frontend
     echo json_encode([
         "sucesso" => true,
         "mensagem" => "Login realizado com sucesso.",
@@ -80,7 +85,7 @@ try {
             "id" => $usuario["id"],
             "nome" => $usuario["nome"],
             "email" => $usuario["email"],
-            "tipo" => $usuario["tipo"] // Envia o valor real ('administrador') para o localStorage do HTML
+            "tipo" => $usuario["tipo"] 
         ]
     ]);
 

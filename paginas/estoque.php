@@ -25,7 +25,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque Central</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/estoque.css">
+    <link rel="stylesheet" href="../css/estoque.css?v=2.0">
 </head>
 <body>
     
@@ -47,8 +47,6 @@ try {
         Cadastro Produtos
       </a>
     </li> 
-
-   
 
     <!-- Prateleiras -->
     <li>
@@ -91,15 +89,30 @@ try {
 
 <main>
     <div id="secao-estoque"> 
-        <div class="secao-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"> 
+        <div class="secao-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;"> 
             <h1>Estoque Central <?= $verInativos ? '(Desativados)' : '' ?></h1>
             
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <!-- BARRA DE PESQUISA -->
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="inputPesquisa" onkeyup="filtrarEstoque()" placeholder="Pesquisar produto ou lote..." 
+                           style="padding: 10px 15px 10px 35px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; width: 240px; outline: none;">
+                    <svg style="position: absolute; left: 10px; width: 16px; height: 16px; fill: #7f8c8d;" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </div>
+
                 <?php if ($verInativos): ?>
                     <a href="estoque.php?ver_inativos=0" class="btn-editar" style="background:#34495e; text-decoration:none; padding:10px 15px; border-radius:8px; color:#fff; font-weight:bold;">Ver Produtos Ativos</a>
                 <?php else: ?>
                     <a href="estoque.php?ver_inativos=1" class="btn-editar" style="background:#7f8c8d; text-decoration:none; padding:10px 15px; border-radius:8px; color:#fff; font-weight:bold;">Ver Produtos Desativados</a>
-                    <button class="btn-adicionar" onclick="window.location.href='produtos.php'" title="Cadastrar Novo Produto">+</button>
+                    
+                    <!-- BOTÃO ADICIONAR COM ÍCONE SVG (CENTRALIZAÇÃO PERFEITA) -->
+                    <button class="btn-adicionar" onclick="window.location.href='produtos.php'" title="Cadastrar Novo Produto">
+                        <svg style="width: 22px; height: 22px; fill: currentColor;" viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </button>
                 <?php endif; ?>
             </div>
         </div> 
@@ -116,7 +129,7 @@ try {
                             <div class="nome">
                                 <h3><?= htmlspecialchars($est['nome_produto']) ?></h3>
                             </div>
-                            <p class="card-info"><strong>Lote:</strong> <?= htmlspecialchars($est['lote']) ?></p>
+                            <p class="card-info"><strong>Lote:</strong> <span class="info-lote"><?= htmlspecialchars($est['lote']) ?></span></p>
                             <p class="card-info"><strong>Validade:</strong> <?= htmlspecialchars($dataFormatada) ?></p>
                             <p class="card-info"><strong>Total no Lote:</strong> <?= htmlspecialchars($est['total_itens']) ?> unidades</p>
                         </div>
@@ -158,10 +171,7 @@ try {
         </div>
         
         <form action="mover_para_prateleira.php" method="POST">
-            <!-- O ID do estoque continua sendo enviado de forma oculta aqui -->
             <input type="hidden" id="mover_id_estoque" name="id_estoque">
-
-            <!-- O campo "Número da Prateleira" foi removido pois o sistema agora automatiza o preenchimento -->
 
             <label for="id_prat" style="display:block; margin-bottom:5px; font-weight:bold; color:#064b78;">Prateleira:</label>
             <select id="id_prat" name="id_prat" required style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
@@ -173,7 +183,7 @@ try {
                                 $nomePrat = trim((string)($prat['nome_produto'] ?? ''));
                                 $nomePratExibicao = mb_strlen($nomePrat) > 32 ? mb_substr($nomePrat, 0, 32) . '...' : $nomePrat;
                             ?>
-                            Prateleira <?= (int)$prat['id_prat'] ?> - Lote <?= htmlspecialchars($prat['lote']) ?> - <?= htmlspecialchars($nomePratExibicao) ?>
+                            Prateleira <?= (int)$prat['id_prat'] ?> - Lote <?= htmlspecialchars($prat['lote']) ?> (<?= htmlspecialchars($nomePratExibicao) ?>)
                         <?php else: ?>
                             Prateleira <?= (int)$prat['id_prat'] ?> - Vazia
                         <?php endif; ?>
@@ -186,7 +196,6 @@ try {
 
             <button type="submit" style="width:100%; background:#2ecc71; color:#fff; border:none; padding:12px; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer;">Confirmar Transferência</button>
         </form>
-
     </dialog>
 </main>
 
@@ -199,6 +208,26 @@ function abrirModalMover(id, nome, maxQtd) {
     inputQtd.max = maxQtd;
     inputQtd.value = '';
     document.getElementById('modalMoverPrateleira').showModal();
+}
+
+// Filtra produtos/lotes exibindo apenas o que COMEÇA com o texto digitado
+function filtrarEstoque() {
+    const termo = document.getElementById('inputPesquisa').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.card-item');
+
+    cards.forEach(card => {
+        const nomeProduto = card.querySelector('h3') ? card.querySelector('h3').innerText.toLowerCase().trim() : '';
+        const loteProduto = card.querySelector('.info-lote') ? card.querySelector('.info-lote').innerText.toLowerCase().trim() : '';
+
+        const comecaComNome = nomeProduto.startsWith(termo);
+        const comecaComLote = loteProduto.startsWith(termo);
+
+        if (termo === '' || comecaComNome || comecaComLote) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+    });
 }
 </script>
 
