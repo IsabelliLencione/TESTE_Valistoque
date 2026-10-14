@@ -1,5 +1,3 @@
-
-
 <?php
 
 require_once __DIR__ . "/../php/config.php";
@@ -11,11 +9,19 @@ if (session_status() === PHP_SESSION_NONE) {
 date_default_timezone_set("America/Sao_Paulo");
 
 /*
+ * PROTEÇÃO DA PÁGINA: Se não houver sessão ativa, manda de volta para o login
+ */
+if (!isset($_SESSION["usuario_id"])) {
+    header("Location: login.html"); 
+    exit;
+}
+
+/*
  * Identifica o perfil do usuário logado.
  * A sessão deve ser definida pelo arquivo de login.
  */
 $tipoUsuario = strtolower(
-    trim($_SESSION["tipo"] ?? "")
+    trim($_SESSION["usuario_tipo"] ?? "")
 );
 
 $ehAdministrador = in_array(

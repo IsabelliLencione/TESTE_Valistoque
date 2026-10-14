@@ -231,4 +231,51 @@ try {
 
 </body>
 
+
+
+<script>
+document.getElementById('prateleiraBusca').addEventListener('input', function () {
+    const termo = this.value.toLowerCase().trim();
+
+    const cards = document.querySelectorAll('.prateleira-card-horizontal');
+
+    cards.forEach(card => {
+
+        // Nome/número da prateleira
+        const elementoNumero = card.querySelector('.prat-numero');
+        const nomePrateleira = elementoNumero
+            ? elementoNumero.textContent.toLowerCase().trim()
+            : '';
+
+        // Nome do produto
+        const elementoProduto = card.querySelector('.prat-detalhes h4');
+        const nomeProduto = elementoProduto
+            ? elementoProduto.textContent.toLowerCase().trim()
+            : '';
+
+        // Lote
+        let lote = '';
+        const paragrafos = card.querySelectorAll('.prat-detalhes p');
+
+        paragrafos.forEach(p => {
+            const texto = p.textContent.trim();
+
+            if (texto.toLowerCase().startsWith('lote:')) {
+                lote = texto.substring(5).trim().toLowerCase();
+            }
+        });
+
+        // Pesquisa somente por prateleira, produto ou lote
+        const corresponde =
+            nomePrateleira.includes(termo) ||
+            nomeProduto.includes(termo) ||
+            lote.includes(termo);
+
+        card.style.display = corresponde ? '' : 'none';
+    });
+});
+</script>
+
+
+
 </html>
