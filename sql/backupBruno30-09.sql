@@ -191,7 +191,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (14,'ana','ana@email.com','12345647','1234','funcionario','2026-09-09 17:14:05');
+
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -227,3 +227,6 @@ INSERT INTO historico_estoque (id_estoque, tipo, quantidade, observacao, data_mo
 (2, 'cadastro', 100, 'Cadastro de novo produto', NOW() - INTERVAL 3 DAY),
 (2, 'saida', 25, 'Movido para Prateleira B2', NOW() - INTERVAL 2 DAY),
 (1, 'entrada', 20, 'Reposição de estoque', NOW() - INTERVAL 1 DAY);
+
+INSERT INTO `usuarios` VALUES (1,'admin','admin@valistoque','12345647','admin123','Administrador','2026-10-14 17:14:05');
+INSERT INTO `usuarios` VALUES (2,'func','func@valistoque','12345647','func123','Funcionario','2026-10-14 17:14:05');
