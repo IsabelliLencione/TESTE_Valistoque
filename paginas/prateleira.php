@@ -156,7 +156,7 @@ try {
 
                 <form method="POST" style="margin: 0;">
                     <input type="hidden" name="adicionar_prateleira" value="1">
-                    <button type="submit" class="btn-adicionar btn-mais" title="Adicionar Prateleira">+</button>
+                    <button type="submit" class="btn-adicionar" title="Adicionar Prateleira">+</button>
                 </form>
 
             </div>
@@ -195,7 +195,7 @@ try {
                     <?php if ($prat['id_estoque'] !== null): ?>
                         <h4><?= htmlspecialchars($prat['nome_produto']) ?></h4>
                         <p><strong>Lote:</strong> <?= htmlspecialchars($prat['lote']) ?></p>
-                        <p><strong>Quantidade:</strong> <?= (int)$prat['qte'] ?> unidades</p>
+                        <p><strong>Quantidade:</strong><span> <?= (int)$prat['qte'] ?></span>unidades</p>
                         <p><strong>Peso Total:</strong> <?= number_format((float)$prat['peso_prat'] / 1000, 3, ',', '.') ?> kg</p>
 
                         <?php if (!empty($prat['ultima_leitura'])): ?>
@@ -206,14 +206,14 @@ try {
 
                         <form method="POST" style="margin-top: 12px;">
                             <input type="hidden" name="esvaziar_prateleira" value="<?= (int)$prat['id_prat'] ?>">
-                            <button type="submit" style="background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            <button type="submit" class="btn-esvaziar">
                                 Esvaziar prateleira
                             </button>
                         </form>
                     <?php else: ?>
                         <h4>Prateleira vazia</h4>
                         <p><strong>Produto:</strong> Nenhum lote associado</p>
-                        <p><strong>Quantidade:</strong> —</p>
+                        <p><strong>Quantidade:</strong><span> —</span></p>
                         <p><strong>Peso Total:</strong> 0,00 kg</p>
                         <p><strong>Última leitura:</strong> —</p>
                     <?php endif; ?>
