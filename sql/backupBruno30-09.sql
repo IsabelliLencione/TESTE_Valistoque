@@ -205,3 +205,25 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-09-30 14:03:13
+
+
+CREATE TABLE IF NOT EXISTS historico_estoque (
+    id_historico INT AUTO_INCREMENT PRIMARY KEY,
+    id_estoque INT NOT NULL,
+    tipo VARCHAR(50) NOT NULL COMMENT 'entrada, saida, cadastro, transferencia, etc.',
+    quantidade INT NOT NULL DEFAULT 0,
+    observacao VARCHAR(255) NULL,
+    data_movimentacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_historico_estoque 
+        FOREIGN KEY (id_estoque) 
+        REFERENCES estoque (id_estoque) 
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO historico_estoque (id_estoque, tipo, quantidade, observacao, data_movimentacao) VALUES
+(1, 'entrada', 50, 'Entrada de lote inicial', NOW() - INTERVAL 5 DAY),
+(1, 'saida', 10, 'Transferência para a Prateleira A1', NOW() - INTERVAL 4 DAY),
+(2, 'cadastro', 100, 'Cadastro de novo produto', NOW() - INTERVAL 3 DAY),
+(2, 'saida', 25, 'Movido para Prateleira B2', NOW() - INTERVAL 2 DAY),
+(1, 'entrada', 20, 'Reposição de estoque', NOW() - INTERVAL 1 DAY);
