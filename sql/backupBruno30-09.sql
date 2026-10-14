@@ -238,7 +238,7 @@ INSERT INTO usuarios (id, nome, email, cpf, senha, tipo, criado_em)
 VALUES (
     2,
     'func',
-    'func@valistoque',
+    'func@valistoque.com',
     '98765432',
     'func123',
     'Funcionario',
