@@ -15,34 +15,160 @@ if (isset($_GET['editar_id'])) {
 }
 
 // 2. Processa o salvamento (Cadastro ou Edição)
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+/* 2. Processa o salvamento (Cadastro ou Edição) */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_estoque = filter_input(INPUT_POST, 'id_estoque', FILTER_VALIDATE_INT);
+
     $nome = $_POST['produto'];
     $lote = $_POST['lote'];
     $validade = $_POST['validade'];
     $peso = $_POST['peso'];
-    $total_itens = ($_POST['caixa'] * $_POST['produto-caixa']);
+
+    $caixas = (int) ($_POST['caixa'] ?? 0);
+    $produtosPorCaixa = (int) ($_POST['produto-caixa'] ?? 0);
+    $total_itens = $caixas * $produtosPorCaixa;
 
     try {
-        if ($id_estoque) {
-            // Se tem ID, atualiza o produto existente (UPDATE)
-            $sql = "UPDATE estoque SET nome_produto = ?, lote = ?, data_validade = ?, total_itens = ?, peso_un = ? WHERE id_estoque = ?";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nome, $lote, $validade, $total_itens, $peso, $id_estoque]);
+        
+if ($id_estoque) {
+    // Inicia a transação para atualizar o lote e seu histórico juntos.
+    $pdo->beginTransaction();
+
+    // Busca a quantidade atual e verifica se o lote está ativo.
+    $stmtAtual = $pdo->prepare("
+        SELECT total_itens, ativo
+        FROM estoque
+        WHERE id_estoque = ?
+        FOR UPDATE
+    ");
+    $stmtAtual->execute([$id_estoque]);
+
+    $produtoAtual = $stmtAtual->fetch(PDO::FETCH_ASSOC);
+
+    if (!$produtoAtual) {
+        throw new Exception("Produto não encontrado.");
+    }
+
+    $quantidadeAnterior = (int) $produtoAtual['total_itens'];
+    $novaQuantidade = (int) $total_itens;
+
+    // Calcula a diferença entre o saldo anterior e o novo.
+    $diferenca = $novaQuantidade - $quantidadeAnterior;
+
+    // Não permite alterar a quantidade de um lote inativo.
+    if ((int) $produtoAtual['ativo'] !== 1 && $diferenca !== 0) {
+        throw new Exception(
+            "Não é possível alterar a quantidade de um lote inativo."
+        );
+    }
+
+    // Atualiza os dados do lote.
+    $sql = "
+        UPDATE estoque
+        SET nome_produto = ?,
+            lote = ?,
+            data_validade = ?,
+            total_itens = ?,
+            peso_un = ?
+        WHERE id_estoque = ?
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        $nome,
+        $lote,
+        $validade,
+        $novaQuantidade,
+        $peso,
+        $id_estoque
+    ]);
+
+    // Registra o histórico somente se a quantidade mudou.
+    if ($diferenca !== 0) {
+        if ($diferenca > 0) {
+            $tipoMovimentacao = 'ajuste_entrada';
         } else {
-            // Se não tem ID, cria um produto novo (INSERT)
-            $sql = "INSERT INTO estoque (nome_produto, lote, data_validade, total_itens, peso_un) VALUES (?, ?, ?, ?, ?)";
+            $tipoMovimentacao = 'ajuste_saida';
+        }
+
+        $quantidadeMovimentada = abs($diferenca);
+
+        $stmtHistorico = $pdo->prepare("
+            INSERT INTO historico_estoque
+                (id_estoque, tipo, quantidade, observacao)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        $stmtHistorico->execute([
+            $id_estoque,
+            $tipoMovimentacao,
+            $quantidadeMovimentada,
+            'Ajuste manual de quantidade'
+        ]);
+    }
+
+    // Confirma a atualização e o histórico juntos.
+    $pdo->commit();
+}
+ else {
+            // Cadastro novo: exige uma quantidade inicial positiva.
+            if ($caixas <= 0 || $produtosPorCaixa <= 0) {
+                throw new Exception(
+                    'Informe uma quantidade de caixas e produtos por caixa maior que zero.'
+                );
+            }
+
+            // Cadastro e histórico devem ser confirmados juntos.
+            $pdo->beginTransaction();
+
+            $sql = "
+                INSERT INTO estoque
+                    (nome_produto, lote, data_validade, total_itens, peso_un)
+                VALUES (?, ?, ?, ?, ?)
+            ";
+
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nome, $lote, $validade, $total_itens, $peso]);
+            $stmt->execute([
+                $nome,
+                $lote,
+                $validade,
+                $total_itens,
+                $peso
+            ]);
+
+            // Recupera o ID do lote que acabou de ser criado.
+            $idNovoEstoque = (int) $pdo->lastInsertId();
+
+            // Registra a entrada inicial no histórico.
+            $sqlHistorico = "
+                INSERT INTO historico_estoque
+                    (id_estoque, tipo, quantidade, observacao)
+                VALUES (?, 'entrada', ?, ?)
+            ";
+
+            $stmtHistorico = $pdo->prepare($sqlHistorico);
+            $stmtHistorico->execute([
+                $idNovoEstoque,
+                $total_itens,
+                'Cadastro inicial do lote'
+            ]);
+
+            $pdo->commit();
         }
 
         header("Location: estoque.php");
         exit;
 
-    } catch (PDOException $e) {
-        die("Erro ao salvar o produto: " . $e->getMessage());
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        die("Erro ao salvar o produto: " . htmlspecialchars($e->getMessage()));
     }
 }
+
 ?>
 
 <!DOCTYPE html>
