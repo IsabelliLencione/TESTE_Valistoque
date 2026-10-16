@@ -1,4 +1,4 @@
-Aqui está o código completo do arquivo mover_para_prateleira.php.   Ele realiza a transferência do estoque central para a prateleira com segurança (usando transação e bloqueio de linha no banco de dados) e registra as alterações do lote e das prateleiras:   PHP<?php
+<?php
 require_once __DIR__ . '/../php/config.php';
 
 /*
@@ -185,6 +185,24 @@ try {
         $stmt->execute();
     }
 
+    
+    // Registra a saída do estoque central no histórico.
+    // Este registro faz parte da mesma transação da transferência.
+    $stmtHistorico = $pdo->prepare("
+        INSERT INTO historico_estoque
+            (id_estoque, tipo, quantidade, id_prat, observacao)
+        VALUES (?, ?, ?, ?, ?)
+    ");
+
+    $stmtHistorico->execute([
+        $id_estoque,
+        'saida',
+        $quantidade,
+        $id_prat,
+        'Transferência para prateleira'
+    ]);
+
+    // Confirma a transferência e o registro histórico juntos.
     $pdo->commit();
 
     header('Location: estoque.php?sucesso=1');
