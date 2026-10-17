@@ -1,65 +1,131 @@
+
 <?php
 require_once __DIR__ . '/../php/config.php';
 
-// Filtros recebidos via GET
-$busca = filter_input(INPUT_GET, 'busca', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-$tipo_filtro = filter_input(INPUT_GET, 'tipo', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-$data_inicio = filter_input(INPUT_GET, 'data_inicio', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-$data_fim = filter_input(INPUT_GET, 'data_fim', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+// Filtros recebidos pela URL.
+$busca = trim($_GET['busca'] ?? '');
+$tipo_filtro = $_GET['tipo'] ?? '';
+$data_inicio = $_GET['data_inicio'] ?? '';
+$data_fim = $_GET['data_fim'] ?? '';
 
-// Construção dinâmica do SQL
+// Tipos permitidos no filtro.
+$tiposPermitidos = [
+    'entrada',
+    'saida',
+    'ajuste_entrada',
+    'ajuste_saida'
+];
+
+// Ignora tipos inválidos enviados pela URL.
+if (!in_array($tipo_filtro, $tiposPermitidos, true)) {
+    $tipo_filtro = '';
+}
+
+// Monta as condições da consulta.
 $conditions = [];
 $params = [];
 
-if (!empty($busca)) {
-    $conditions[] = "(e.nome_produto LIKE :busca OR e.lote LIKE :busca)";
+if ($busca !== '') {
+    $conditions[] = "(e.nome_produto LIKE :busca
+                      OR e.lote LIKE :busca)";
     $params[':busca'] = "%{$busca}%";
 }
 
-if (!empty($tipo_filtro)) {
+if ($tipo_filtro !== '') {
     $conditions[] = "h.tipo = :tipo";
     $params[':tipo'] = $tipo_filtro;
 }
 
-if (!empty($data_inicio)) {
-    $conditions[] = "DATE(h.data_movimentacao) >= :data_inicio";
-    $params[':data_inicio'] = $data_inicio;
+if ($data_inicio !== '') {
+    $conditions[] = "h.data_movimentacao >= :data_inicio";
+    $params[':data_inicio'] = $data_inicio . ' 00:00:00';
 }
 
-if (!empty($data_fim)) {
-    $conditions[] = "DATE(h.data_fim) <= :data_fim";
-    $params[':data_fim'] = $data_fim;
+if ($data_fim !== '') {
+    $conditions[] = "h.data_movimentacao <= :data_fim";
+    $params[':data_fim'] = $data_fim . ' 23:59:59';
 }
 
-$whereClause = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+$whereClause = !empty($conditions)
+    ? 'WHERE ' . implode(' AND ', $conditions)
+    : '';
 
 try {
-    // Busca do histórico do Estoque Central
-    $sqlHist = "SELECT h.*, e.nome_produto, e.lote 
-                FROM historico_estoque h
-                LEFT JOIN estoque e ON e.id_estoque = h.id_estoque
-                {$whereClause}
-                ORDER BY h.id_historico DESC LIMIT 100";
-    
-    $stmtHist = $pdo->prepare($sqlHist);
-    foreach ($params as $key => $val) {
-        $stmtHist->bindValue($key, $val);
-    }
-    $stmtHist->execute();
-    $historico = $stmtHist->fetchAll(PDO::FETCH_ASSOC);
+    // Busca as movimentações dos lotes ativos.
+    $sqlHist = "
+        SELECT
+            h.*,
+            e.nome_produto,
+            e.lote
+        FROM historico_estoque h
+        INNER JOIN estoque e
+            ON e.id_estoque = h.id_estoque
+            AND e.ativo = 1
+        {$whereClause}
+        ORDER BY
+            h.data_movimentacao DESC,
+            h.id_historico DESC
+        LIMIT 1000
+    ";
 
-    // Totais de Entradas e Saídas
-    $sqlTotais = "SELECT 
-                    SUM(CASE WHEN LOWER(tipo) IN ('entrada', 'cadastro', 'adicao') THEN quantidade ELSE 0 END) AS total_entradas,
-                    SUM(CASE WHEN LOWER(tipo) IN ('saida', 'transferencia', 'mover', 'desativacao') THEN quantidade ELSE 0 END) AS total_saidas
-                  FROM historico_estoque";
-    $totais = $pdo->query($sqlTotais)->fetch(PDO::FETCH_ASSOC);
+    $stmtHist = $pdo->prepare($sqlHist);
+    $stmtHist->execute($params);
+
+    $historico = $stmtHist->fetchAll(PDO::FETCH_ASSOC);
+ 
+    // Calcula os totais respeitando os mesmos filtros da tabela
+    // e considerando somente lotes ativos.
+    $sqlTotais = "
+        SELECT
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN h.tipo IN ('entrada', 'ajuste_entrada')
+                        THEN h.quantidade
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS total_entradas,
+
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN h.tipo IN ('saida', 'ajuste_saida')
+                        THEN h.quantidade
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS total_saidas
+
+        FROM historico_estoque h
+
+        INNER JOIN estoque e
+            ON e.id_estoque = h.id_estoque
+            AND e.ativo = 1
+
+        {$whereClause}
+    ";
+
+    $stmtTotais = $pdo->prepare($sqlTotais);
+    $stmtTotais->execute($params);
+
+    $totais = $stmtTotais->fetch(PDO::FETCH_ASSOC);
+
 
 } catch (PDOException $e) {
+    error_log("Erro ao consultar relatório: " . $e->getMessage());
+
     $historico = [];
-    $totais = ['total_entradas' => 0, 'total_saidas' => 0];
+
+    $totais = [
+        'total_entradas' => 0,
+        'total_saidas' => 0
+    ];
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -202,6 +268,11 @@ try {
                 </div>
             </div>
         </div>
+         <p class="aviso-limite" data-html2canvas-ignore="true">
+            São exibidas no máximo as 1.000 movimentações mais recentes
+            para os filtros selecionados. Os totais dos cards consideram
+            todas as movimentações correspondentes aos filtros.
+        </p>
 
         <!-- PAINEL DE FILTROS -->
         <div class="painel-filtros" data-html2canvas-ignore="true">
@@ -214,9 +285,25 @@ try {
                 <div class="campo-filtro">
                     <label for="tipo">Tipo:</label>
                     <select id="tipo" name="tipo">
-                        <option value="">Todos os Tipos</option>
-                        <option value="entrada" <?= $tipo_filtro === 'entrada' ? 'selected' : '' ?>>Entrada / Cadastro</option>
-                        <option value="saida" <?= $tipo_filtro === 'saida' ? 'selected' : '' ?>>Saída / Transferência</option>
+                        <option value="" <?= $tipo_filtro === '' ? 'selected' : '' ?>>
+                            Todos os Tipos
+                        </option>
+
+                        <option value="entrada" <?= $tipo_filtro === 'entrada' ? 'selected' : '' ?>>
+                            Entrada / Cadastro
+                        </option>
+
+                        <option value="saida" <?= $tipo_filtro === 'saida' ? 'selected' : '' ?>>
+                            Saída / Transferência
+                        </option>
+
+                        <option value="ajuste_entrada" <?= $tipo_filtro === 'ajuste_entrada' ? 'selected' : '' ?>>
+                            Ajuste de Entrada
+                        </option>
+
+                        <option value="ajuste_saida" <?= $tipo_filtro === 'ajuste_saida' ? 'selected' : '' ?>>
+                            Ajuste de Saída
+                        </option>
                     </select>
                 </div>
 
@@ -256,24 +343,80 @@ try {
                         </tr>
                     </thead>
                     <tbody>
+                        
                         <?php foreach ($historico as $h): ?>
-                            <?php 
-                                $tipoRaw = strtolower($h['tipo'] ?? 'entrada');
-                                $isEntrada = in_array($tipoRaw, ['entrada', 'cadastro', 'adicao', 'novo']);
+                            <?php
+                                $tipoRaw = $h['tipo'];
+
+                                $tiposExibicao = [
+                                    'entrada' => [
+                                        'texto' => '↓ ENTRADA',
+                                        'classe' => 'tag-entrada'
+                                    ],
+                                    'saida' => [
+                                        'texto' => '↑ SAÍDA',
+                                        'classe' => 'tag-saida'
+                                    ],
+                                    'ajuste_entrada' => [
+                                        'texto' => '↑ AJUSTE DE ENTRADA',
+                                        'classe' => 'tag-entrada'
+                                    ],
+                                    'ajuste_saida' => [
+                                        'texto' => '↓ AJUSTE DE SAÍDA',
+                                        'classe' => 'tag-saida'
+                                    ]
+                                ];
+
+                                $tipoInfo = $tiposExibicao[$tipoRaw] ?? [
+                                    'texto' => strtoupper($tipoRaw),
+                                    'classe' => 'tag-saida'
+                                ];
                             ?>
+
                             <tr>
-                                <td><?= date("d/m/Y H:i", strtotime($h['data_movimentacao'] ?? $h['created_at'] ?? 'now')) ?></td>
                                 <td>
-                                    <span class="tag-mov <?= $isEntrada ? 'tag-entrada' : 'tag-saida' ?>">
-                                        <?= $isEntrada ? '↓ ENTRADA' : '↑ SAÍDA' ?>
+                                    <?= date(
+                                        "d/m/Y H:i",
+                                        strtotime($h['data_movimentacao'])
+                                    ) ?>
+                                </td>
+
+                                <td>
+                                    <span class="tag-mov <?= $tipoInfo['classe'] ?>">
+                                        <?= htmlspecialchars($tipoInfo['texto']) ?>
                                     </span>
                                 </td>
-                                <td><strong><?= htmlspecialchars($h['nome_produto'] ?? 'Produto #' . $h['id_estoque']) ?></strong></td>
-                                <td><span class="badge-lote"><?= htmlspecialchars($h['lote'] ?? '-') ?></span></td>
-                                <td><strong><?= (int)($h['quantidade'] ?? 0) ?> un</strong></td>
-                                <td><?= htmlspecialchars($h['observacao'] ?? ($isEntrada ? 'Entrada no estoque central' : 'Movido para prateleira')) ?></td>
+
+                                <td>
+                                    <strong>
+                                        <?= htmlspecialchars($h['nome_produto']) ?>
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <span class="badge-lote">
+                                        <?= htmlspecialchars($h['lote']) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        <?= (int) $h['quantidade'] ?> un
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars(
+                                        $h['observacao'] ?? '-'
+                                    ) ?>
+
+                                    <?php if (!empty($h['id_prat'])): ?>
+                                        — Prateleira <?= (int) $h['id_prat'] ?>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
+
                     </tbody>
                 </table>
             <?php endif; ?>
