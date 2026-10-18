@@ -301,3 +301,161 @@ main {
   border-left: 3px solid #8a9bae;
   border-radius: 4px;
 }
+
+.seletor-relatorio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.seletor-relatorio a {
+  display: inline-block;
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #333;
+  text-decoration: none;
+}
+
+.seletor-relatorio a:hover {
+  background-color: #f2f2f2;
+}
+
+.seletor-relatorio a.selecionado {
+  background-color: #e2e8f0;
+  border-color: #64748b;
+  font-weight: bold;
+}
+
+.lote-inativo {
+  background-color: #f5f5f5;
+  color: #777;
+}
+
+.status-ativo,
+.status-inativo {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-ativo {
+  background-color: #e2f5e9;
+  color: #216e39;
+}
+
+.status-inativo {
+  background-color: #eeeeee;
+  color: #666666;
+}
+
+.cabecalho-pdf {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #ddd;
+}
+
+.cabecalho-pdf h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  color: #2c3e50;
+}
+
+.cabecalho-pdf p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Compactação do layout do relatório */
+
+/* Reduz o espaçamento geral da página */
+main {
+  padding: 20px 24px;
+}
+
+/* Cabeçalho principal mais compacto */
+.header-pagina {
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.header-pagina h1 {
+  font-size: 21px;
+}
+
+/* Seletor das visualizações mais próximo do cabeçalho */
+.seletor-relatorio {
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
+.seletor-relatorio a {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+/* Mantém os cards em destaque, mas reduz sua altura */
+.cards-resumo {
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.card-resumo {
+  padding: 14px 18px;
+  gap: 14px;
+  min-width: 220px;
+}
+
+.card-icon {
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+}
+
+.card-valor {
+  font-size: 23px;
+}
+
+/* Painel de filtros mais compacto */
+.painel-filtros {
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.form-filtros {
+  gap: 10px;
+}
+
+.campo-filtro {
+  gap: 4px;
+  min-width: 130px;
+}
+
+.campo-filtro input,
+.campo-filtro select {
+  padding: 7px 9px;
+}
+
+/* Tabela um pouco mais compacta */
+.tabela-relatorio th,
+.tabela-relatorio td {
+  padding: 9px 12px;
+}
+
+/* Cabeçalho interno do relatório */
+.cabecalho-pdf {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+}
+
+.cabecalho-pdf h2 {
+  font-size: 19px;
+}
+
+.cabecalho-pdf p {
+  font-size: 11px;
+}

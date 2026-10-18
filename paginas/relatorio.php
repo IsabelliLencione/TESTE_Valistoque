@@ -7,6 +7,17 @@ $busca = trim($_GET['busca'] ?? '');
 $tipo_filtro = $_GET['tipo'] ?? '';
 $data_inicio = $_GET['data_inicio'] ?? '';
 $data_fim = $_GET['data_fim'] ?? '';
+$visao = $_GET['visao'] ?? 'movimentacoes';
+
+if (!in_array($visao, ['movimentacoes', 'estoque'], true)) {
+    $visao = 'movimentacoes';
+}
+
+$tituloRelatorio = $visao === 'estoque'
+    ? 'Relatório do Estoque Atual'
+    : 'Relatório de Movimentações do Estoque Central';
+
+$dataGeracao = date('d/m/Y H:i:s');
 
 // Tipos permitidos no filtro.
 $tiposPermitidos = [
@@ -67,6 +78,31 @@ try {
             h.id_historico DESC
         LIMIT 1000
     ";
+    $sqlEstoque = "
+        SELECT
+            e.id_estoque,
+            e.nome_produto,
+            e.lote,
+            e.data_validade,
+            e.total_itens,
+            e.ativo,
+            COALESCE(p.total_prateleiras, 0) AS total_prateleiras
+        FROM estoque e
+        LEFT JOIN (
+            SELECT
+                id_estoque,
+                SUM(qte) AS total_prateleiras
+            FROM prateleiras
+            WHERE id_estoque IS NOT NULL
+            GROUP BY id_estoque
+        ) p ON p.id_estoque = e.id_estoque
+        ORDER BY e.id_estoque DESC
+    ";
+
+    $stmtEstoque = $pdo->prepare($sqlEstoque);
+    $stmtEstoque->execute();
+
+$estoqueAtual = $stmtEstoque->fetchAll(PDO::FETCH_ASSOC);
 
     $stmtHist = $pdo->prepare($sqlHist);
     $stmtHist->execute($params);
@@ -175,12 +211,6 @@ try {
 
         <li>
 
-         
-
-        </li>
-
-        <li>
-
             <a href="prateleira.php">
 
                 <svg class="nav-icon" viewBox="0 0 24 24">
@@ -238,18 +268,59 @@ try {
 <main>
     <div class="header-pagina">
         <div>
-            <h1>Relatório de Movimentações do Estoque Central</h1>
-            <p class="subtitulo">Acompanhe as entradas, cadastros e transferências em tempo real</p>
+            <h1>
+                <?= $visao === 'estoque'
+                    ? 'Relatório do Estoque Atual'
+                    : 'Relatório de Movimentações do Estoque Central' ?>
+            </h1>
+
+            <p class="subtitulo">
+                <?= $visao === 'estoque'
+                    ? 'Consulte as quantidades atuais dos lotes no estoque central e nas prateleiras.'
+                    : 'Acompanhe as entradas, cadastros e transferências em tempo real.' ?>
+            </p>
         </div>
         <!-- BOTÃO DE BAIXAR EM PDF -->
-        <button type="button" onclick="gerarPDF()" class="btn-download">
-            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <button
+            type="button"
+            onclick="gerarPDF()"
+            class="btn-download"
+            data-html2canvas-ignore="true"
+        >
+            <svg viewBox="0 0 24 24">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+
             Baixar PDF
         </button>
+    </div>
+    <div class="seletor-relatorio">
+        <a
+            href="relatorio.php?visao=movimentacoes"
+            class="<?= $visao === 'movimentacoes' ? 'selecionado' : '' ?>"
+        >
+            Movimentações
+        </a>
+
+        <a
+            href="relatorio.php?visao=estoque"
+            class="<?= $visao === 'estoque' ? 'selecionado' : '' ?>"
+        >
+            Estoque atual
+        </a>
     </div>
 
     <!-- CONTEÚDO QUE SERÁ EXPORTADO PARA O PDF -->
     <div id="conteudo-relatorio">
+        <div class="cabecalho-pdf">
+            <h2><?= htmlspecialchars($tituloRelatorio) ?></h2>
+
+            <p>
+                Gerado em:
+                <?= htmlspecialchars($dataGeracao) ?>
+            </p>
+        </div>
+        <?php if ($visao === 'movimentacoes'): ?>
         <!-- CARDS DE RESUMO ESTATÍSTICO (APENAS ENTRADAS E SAÍDAS) -->
         <div class="cards-resumo">
             <div class="card-resumo card-entrada">
@@ -421,21 +492,118 @@ try {
                 </table>
             <?php endif; ?>
         </section>
+        <?php else: ?>
+            <!-- Tabela de estoque -->
+            <section class="tabela-container">
+
+                <?php if (empty($estoqueAtual)): ?>
+
+                    <div class="sem-registros">
+                        <p>Nenhum lote foi encontrado no estoque.</p>
+                    </div>
+
+                <?php else: ?>
+
+                    <table class="tabela-relatorio">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Lote</th>
+                                <th>Validade</th>
+                                <th>Estoque central</th>
+                                <th>Nas prateleiras</th>
+                                <th>Situação</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <?php foreach ($estoqueAtual as $item): ?>
+
+                                <tr class="<?= (int) $item['ativo'] === 0 ? 'lote-inativo' : '' ?>">
+
+                                    <td>
+                                        <strong>
+                                            <?= htmlspecialchars($item['nome_produto']) ?>
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge-lote">
+                                            <?= htmlspecialchars($item['lote']) ?>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <?= !empty($item['data_validade'])
+                                            ? date('d/m/Y', strtotime($item['data_validade']))
+                                            : '-' ?>
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            <?= number_format((int) $item['total_itens'], 0, ',', '.') ?> un
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            <?= number_format((int) $item['total_prateleiras'], 0, ',', '.') ?> un
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <?php if ((int) $item['ativo'] === 1): ?>
+                                            <span class="status-ativo">Ativo</span>
+                                        <?php else: ?>
+                                            <span class="status-inativo">Inativo</span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                </tr>
+
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+
+                <?php endif; ?>
+
+            </section>
+
+        <?php endif; ?>
     </div>
 </main>
 
 <script>
 function gerarPDF() {
     const elemento = document.getElementById('conteudo-relatorio');
+
+    const visao = <?= json_encode($visao) ?>;
+
+    const nomeArquivo = visao === 'estoque'
+        ? 'Relatorio_Estoque_Atual.pdf'
+        : 'Relatorio_Movimentacoes.pdf';
+
     const opcoes = {
-        margin:       10,
-        filename:     'Relatorio_Estoque_Central.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        margin: 10,
+        filename: nomeArquivo,
+        image: {
+            type: 'jpeg',
+            quality: 0.98
+        },
+        html2canvas: {
+            scale: 2
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'landscape'
+        }
     };
 
-    html2pdf().set(opcoes).from(elemento).save();
+    html2pdf()
+        .set(opcoes)
+        .from(elemento)
+        .save();
 }
 </script>
 
