@@ -16,9 +16,9 @@ SoftwareSerial esp8266(3, 2);
 // ********************************************************
 // ALTERE OS DADOS DA REDE ONDE O ESP8266 IRÁ CONECTAR E O IP DE ONDE ESTÁ O BD
 int numero_prateleira = 1;
-String nome_rede = "GUILHERME";
+String nome_rede = "redeteste";
 String senha_rede = "12345678";
-String ip_servidor = "10.136.86.26"; 
+String ip_servidor = "10.136.86.20"; 
 String porta_servidor = "80";
 
 void setup() {
